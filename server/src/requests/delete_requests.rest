@@ -1,0 +1,4 @@
+DELETE http://localhost:9999/api/v1/grocery-items/banana
+
+###
+DELETE http://localhost:9999/api/users/6152863bee916e94e0a99217

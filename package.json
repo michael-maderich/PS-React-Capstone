@@ -1,0 +1,16 @@
+{
+	"name": "case-study",
+	"version": "1.0.0",
+	"description": "Capstone project for Per Scholas React course 2021",
+	"main": "index.js",
+	"scripts": {
+		"transpile": "cd server/src && tsc -watch && cd ../../",
+		"start-database": "C:\\Progra~1\\MongoDB\\Server\\5.0\\bin\\mongod",
+		"start-server": "start npm run start-database && start npm run transpile && npm run --prefix server start",
+		"start-client": "npm run --prefix client start",
+		"start": "start npm run start-server && npm run start-client",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"author": "Michael A Maderich",
+	"license": "ISC"
+}
