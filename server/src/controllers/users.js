@@ -59,12 +59,12 @@ usersRouter.get('/:id', function (req, res, next) {
     logger.info('User ID:', id);
     user_1.User.findById(id)
         .then(function (requestedUser) {
-        if (requestedUser)
-            res.status(200).json(requestedUser);
-        else {
+        if (!requestedUser) {
             logger.info("Invalid endpoint - " + req.path + ".");
             res.status(404).end();
+            return;
         }
+        res.status(200).json(requestedUser);
     })
         .catch(function (error) {
         // logger.info(`Error - ${error.message}`);
@@ -75,13 +75,13 @@ usersRouter.get('/:id', function (req, res, next) {
 // TODO: Add apidoc documentation
 /*********** NEED TO CHECK IF USER ALREADY EXISTS ***************************************************************/
 usersRouter.post('/', function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, username, name, password, passwordHash, newUser;
+    var _a, email, name, password, isEnabled, passwordHash, newUser;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
-                _a = req.body, username = _a.username, name = _a.name, password = _a.password;
-                //console.log(username, name, password);
-                if (!username || !name || !password) {
+                _a = req.body, email = _a.email, name = _a.name, password = _a.password, isEnabled = _a.isEnabled;
+                //console.log(email, name, password);
+                if (!email || !name || !password) {
                     res.statusMessage = "Error - malformed POST body: " + JSON.stringify(req.body);
                     return [2 /*return*/, res.status(400).end()]; // 400: Bad Request
                 }
@@ -89,10 +89,11 @@ usersRouter.post('/', function (req, res, next) { return __awaiter(void 0, void 
             case 1:
                 passwordHash = _b.sent();
                 newUser = new user_1.User({
-                    username: username,
+                    email: email.toLowerCase(),
                     name: name,
                     passwordHash: passwordHash,
-                    dateAdded: new Date()
+                    dateAdded: new Date(),
+                    isEnabled: isEnabled || true
                 });
                 // Save to mongoDB
                 newUser.save()

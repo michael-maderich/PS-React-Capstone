@@ -1,17 +1,18 @@
-import './App.css';
+//import './App.css'; // we import bootstrap.min.css and main.css in the head element instead. Could change up later
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import dotenv from 'dotenv';
-import ErrorNotification from './Components/ErrorNotification'; 
 import groceriesService from './services/groceries.js';
 
 // Source code imports
-import { PRODUCT_TYPE } from './type-defs/typeDefs';
-import ItemsList from './ItemsList';
-import SelectedItems from './SelectedItems';
+import { PRODUCT_TYPE, USER_TYPE } from './type-defs/typeDefs';
+import ErrorNotification from './Components/ErrorNotification';
+import Header from './Components/Header';
+import HomePage from './Components/HomePage';
+import ItemsList from './Components/ItemsList';
 
-// Our raw data. In a real app we might get this via an API call instead of it being hardcoded.
-const TYPE_NAMES = {
+//Our raw data. In a real app we might get this via an API call instead of it being hardcoded.
+const PRODUCT_TYPE_NAMES = {
 	fruits: 'fruit',
 	vegetables: 'vegetable'
 };
@@ -19,12 +20,15 @@ const TYPE_NAMES = {
 dotenv.config();
 
 const App = () => {
+	const userName = '';
 	// create the react component state we'll use to store our data
+	const [navMenuItems, setNavMenuItems]:[string[], React.Dispatch<React.SetStateAction<string[]>>] = useState([] as string[]);
 	const [items, setItems]:[PRODUCT_TYPE[], React.Dispatch<React.SetStateAction<PRODUCT_TYPE[]>>] = useState([] as PRODUCT_TYPE[]);
-	const [newItem, setNewItem]:[PRODUCT_TYPE, React.Dispatch<React.SetStateAction<PRODUCT_TYPE>>] = useState({type:TYPE_NAMES.fruits, checked:false} as PRODUCT_TYPE);
+	const [newItem, setNewItem]:[PRODUCT_TYPE, React.Dispatch<React.SetStateAction<PRODUCT_TYPE>>] = useState({type:PRODUCT_TYPE_NAMES.fruits, checked:false} as PRODUCT_TYPE);
 	const [errorMessage, setErrorMessage]:[any, any] = useState(null);
 
 	useEffect(() => {
+		//productsService.getCategories()
 		groceriesService.getAll()
 			.then(response => {		// Handle successful response
 				const {data} = response;	// Why map ok when data not array?
@@ -80,7 +84,7 @@ const App = () => {
 				// Reset newItem here if desired (setNewItem)
 			});
 	};
-
+	
 	const handleCheckboxToggle = (itemName:string) => {	// To check/uncheck available products
 		// Go thru all items; change the desired one; return a new array which has our updated item and all the other items.
 		setItems( (prevState:any) => {
@@ -106,67 +110,95 @@ const App = () => {
 
 //	console.log('App.state.items is ', items);
 
-	// Data being retrieved from server
-	if (!items.length) {
-		return <div>Loading...</div>;
-	} else {
-		return (
+	if (!items.length) return <div>Loading...</div>; // Data not yet retrieved from server
+	return (
 		<div>
+			<Header userName={userName} />
+			<ErrorNotification message={errorMessage} />
 			<Router>
-				<div className='App'>
-					<h1>Grocery List App</h1>
-					<div>
-						<Link to='/'>Selected Items</Link>
-					</div>
-					<div>
-						<Link to={`/${TYPE_NAMES.fruits}`}>Fruits</Link>
-					</div>
-					<div>
-						<Link to={`/${TYPE_NAMES.vegetables}`}>Vegetables</Link>
-					</div>
+				<div id='side-nav'>
+					<ul className='nav flex-column'>
+						<li className='nav-item'>
+							<Link to='/' className='nav-link'>
+								Home
+							</Link>
+						</li>
+						<li className='nav-item'>
+							<Link
+								to='/products/laundry'
+								className='nav-link'
+							>
+								Laundry
+							</Link>
+						</li>
+						<li className='nav-item'>
+							<Link
+								to='/products/oralcare'
+								className='nav-link'
+							>
+								Oral Care
+							</Link>
+						</li>
+						{/* <c:forEach items='${navMenuItems}' var='mainCategory'>
+					<c:set var='subCatList' value='' />
+				<li className='nav-item ${categoryName == mainCategory ? 'highlighted' : ''}'>
+				<c:forEach items='${navSubMenuItems}' var='subCat'>
+					<c:set var='subCatList' value='${subCatList}${empty subCatList ? '' : ', '}${subCat}' />
+				</c:forEach>
+					<a className='nav-link' href='/category/${mainCategory}'>${mainCategory}</a>	<%--  title='${subCatList}' --%>
+				</li>
+				<c:if test = '${mainCategory == param.categoryName}'>
+				<c:forEach items='${navSubMenuItems}' var='subCategory'>
+					<li className='nav-item subNavItem ${subCategoryName == subCategory ? 'highlighted' : ''}'>
+						<a className='nav-link subNavLink' href='/category/${mainCategory}/${subCategory}'>${subCategory}</a>
+					</li>
+				</c:forEach>
+				</c:if>
+				</c:forEach> */}
+					</ul>
 				</div>
-				<ErrorNotification message={errorMessage} />
 				<Switch>
-					<Route path={`/${TYPE_NAMES.fruits}`}>
-						{/* {setNewItem(prev => ({
-							...prev,
-							type: TYPE_NAMES.fruits
-						}))} */}
-						<ItemsList
-							newItem={newItem}
-							setNewItem={setNewItem}
-							items={items}
-							type={TYPE_NAMES.fruits}
-							handleCheckboxToggle={handleCheckboxToggle}
-							handleInputChange={handleInputChange}
-							handleInputSubmit={handleInputSubmit}
-						/>
+					<Route path={`/products/laundry`}>
+						{/* <ItemsList
+					newItem={newItem}
+					setNewItem={setNewItem}
+					items={items}
+					type={PRODUCT_TYPE_NAMES.fruits}
+					handleCheckboxToggle={handleCheckboxToggle}
+					handleInputChange={handleInputChange}
+					handleInputSubmit={handleInputSubmit}
+				/> */}
 					</Route>
-					<Route path={`/${TYPE_NAMES.vegetables}`}>
+					<Route path={`/products/oralcare`}>
+						{/* <ItemsList
+					newItem={newItem}
+					setNewItem={setNewItem}
+					items={items}
+					type={PRODUCT_TYPE_NAMES.vegetables}
+					handleCheckboxToggle={handleCheckboxToggle}
+					handleInputChange={handleInputChange}
+					handleInputSubmit={handleInputSubmit}
+				/> */}
+					</Route>
+					<Route path='/login'>
 						<ItemsList
 							newItem={newItem}
 							setNewItem={setNewItem}
 							items={items}
-							type={TYPE_NAMES.vegetables}
+							type={PRODUCT_TYPE_NAMES.fruits}
 							handleCheckboxToggle={handleCheckboxToggle}
 							handleInputChange={handleInputChange}
 							handleInputSubmit={handleInputSubmit}
 						/>
 					</Route>
 					<Route path='/'>
-						<SelectedItems
-							items={items}
-							handleCheckboxToggle={handleCheckboxToggle}
-						/>
+						<HomePage items={items} />
 					</Route>
 				</Switch>
 			</Router>
 			<Footer />
 		</div>
-		);
-	}
-
-
+	);
 }
 
 const Footer = () => {

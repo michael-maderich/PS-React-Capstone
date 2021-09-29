@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { PRODUCT_TYPE } from "./type-defs/typeDefs";
+import { PRODUCT_TYPE } from "../type-defs/typeDefs";
 
 function Item({ item, handleCheckboxToggle }:{item:PRODUCT_TYPE, handleCheckboxToggle:any}) {
 	const handleChange = () => handleCheckboxToggle(item.name);

@@ -74,7 +74,7 @@ app.use(express.static(path.resolve(__dirname, '/client-app/build')));
 // Send all requests to paths at '/api/v1/grocery-items'... to groceryItemsRouter
 app.use('/api/v1/grocery-items/', groceryItemsRouter);
 // Send all requests to paths at '/users'... to usersRouter
-app.use('/api/users', usersRouter);
+app.use('/api/v1/users', usersRouter);
 
 app.get('/', (req, res) => {
 	res.json({message:'Hellooo World from Server!'});
