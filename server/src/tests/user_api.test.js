@@ -39,14 +39,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * A better option is to specify the tests that need to be run as parameter of the npm test command.
 
-The following command only runs the tests found in the tests/note_api.test.js file:
-npm test -- tests/note_api.test.js
+The following command only runs the tests found in the tests/user_api.test.js file:
+npm test -- tests/user_api.test.js
 
 The -t option can be used for running tests with a specific name:
-npm test -- -t 'a specific note is within the returned notes'
+npm test -- -t 'a specific user is within the returned users'
 
-The provided parameter can refer to the name of the test or the describe block. The parameter can also contain just a part of the name. The following command will run all of the tests that contain notes in their name:
-npm test -- -t 'notes'
+The provided parameter can refer to the name of the test or the describe block. The parameter can also contain just a part of the name. The following command will run all of the tests that contain users in their name:
+npm test -- -t 'users'
  */
 var mongoose = require("mongoose");
 var supertest = require("supertest");
@@ -60,19 +60,22 @@ var user_1 = require("../models/user");
 // };
 var passwordHash = 'pass123'; //hashPassword('pass123').then( hashedPassword => hashedPassword);
 var initialUsers = [
-    { 'username': 'scruffmcgruff',
+    { 'email': 'scruffmcgruff@yahoo.com',
         'name': 'Michael Maderich',
-        'passwordHash': passwordHash
+        'passwordHash': passwordHash,
+        'isEnabled': true
     },
     {
-        'username': 'CPrentzler',
+        'email': 'CPrentzler@aol.com',
         'name': 'Charisse Prentzler',
-        'passwordHash': passwordHash
+        'passwordHash': passwordHash,
+        'isEnabled': true
     },
     {
-        'username': 'testytest',
+        'email': 'testytest@hotmail.com',
         'name': 'Testy McTest',
-        'passwordHash': passwordHash
+        'passwordHash': passwordHash,
+        'isEnabled': true
     }
 ];
 beforeEach(function () { return __awaiter(void 0, void 0, void 0, function () {
@@ -81,8 +84,11 @@ beforeEach(function () { return __awaiter(void 0, void 0, void 0, function () {
         switch (_a.label) {
             case 0: return [4 /*yield*/, user_1.User.deleteMany({})];
             case 1:
-                _a.sent();
-                userObjects = initialUsers.map(function (user) { return new user_1.User(user); });
+                _a.sent(); // Clear the test database
+                userObjects = initialUsers.map(function (user) {
+                    user.email = user.email.toLowerCase();
+                    return new user_1.User(user);
+                });
                 promiseArray = userObjects.map(function (user) { return user.save(); });
                 return [4 /*yield*/, Promise.all(promiseArray)];
             case 2:
@@ -96,7 +102,7 @@ describe('When there are initially some users saved:', function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, api
-                        .get('/api/users')
+                        .get('/api/v1/users')
                         .expect(200)
                         .expect('Content-Type', /application\/json/)];
                 case 1:
@@ -109,7 +115,7 @@ describe('When there are initially some users saved:', function () {
         var response;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, api.get('/api/users')];
+                case 0: return [4 /*yield*/, api.get('/api/v1/users')];
                 case 1:
                     response = _a.sent();
                     // execution gets here only after the HTTP request is complete
@@ -119,14 +125,14 @@ describe('When there are initially some users saved:', function () {
         });
     }); });
     test('A specific user is within the returned users', function () { return __awaiter(void 0, void 0, void 0, function () {
-        var response, usernames;
+        var response, emails;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, api.get('/api/users')];
+                case 0: return [4 /*yield*/, api.get('/api/v1/users')];
                 case 1:
                     response = _a.sent();
-                    usernames = response.body.map(function (user) { return user.username; });
-                    expect(usernames).toContain('scruffmcgruff');
+                    emails = response.body.map(function (user) { return user.email; });
+                    expect(emails).toContain(initialUsers[0].email);
                     return [2 /*return*/];
             }
         });
@@ -134,21 +140,76 @@ describe('When there are initially some users saved:', function () {
 });
 describe('Viewing a specific user:', function () {
     test('Succeeds with a valid id', function () { return __awaiter(void 0, void 0, void 0, function () {
-        var userToView, resultNote, processedNoteToView;
+        var userToView, id, result, resultUser, processedUserToView;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     userToView = initialUsers[0];
-                    user_1.User.find({ username: userToView.username })
-                        .then(function (foundUser) { return userToView['id'] = foundUser.id; });
+                    id = '';
+                    return [4 /*yield*/, user_1.User.find({ email: userToView.email })
+                            .then(function (foundUser) {
+                            id = foundUser[0].id;
+                        })];
+                case 1:
+                    _a.sent();
                     return [4 /*yield*/, api
-                            .get("/api/users/" + userToView['id'])
+                            .get("/api/v1/users/" + id)
                             .expect(200)
                             .expect('Content-Type', /application\/json/)];
+                case 2:
+                    result = _a.sent();
+                    resultUser = result.body;
+                    resultUser.id = id;
+                    delete resultUser.passwordHash;
+                    processedUserToView = JSON.parse(JSON.stringify(userToView));
+                    expect(resultUser.email).toEqual(processedUserToView.email);
+                    expect(resultUser.name).toEqual(processedUserToView.name);
+                    return [2 /*return*/];
+            }
+        });
+    }); });
+    test('Fails with statuscode 404 if user does not exist', function () { return __awaiter(void 0, void 0, void 0, function () {
+        var nonExistingId, validNonexistingId;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    nonExistingId = function () { return __awaiter(void 0, void 0, void 0, function () {
+                        var user;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    user = new user_1.User({ email: 'willremovethissoon', name: 'Delete This', password: 'blah' });
+                                    return [4 /*yield*/, user.save()];
+                                case 1:
+                                    _a.sent();
+                                    return [4 /*yield*/, user.remove()];
+                                case 2:
+                                    _a.sent();
+                                    return [2 /*return*/, user._id.toString()];
+                            }
+                        });
+                    }); };
+                    validNonexistingId = nonExistingId;
+                    return [4 /*yield*/, api
+                            .get("/api/v1/users/" + validNonexistingId)
+                            .expect(404)];
                 case 1:
-                    resultNote = _a.sent();
-                    processedNoteToView = JSON.parse(JSON.stringify(userToView));
-                    expect(resultNote.body).toEqual(processedNoteToView);
+                    _a.sent();
+                    return [2 /*return*/];
+            }
+        });
+    }); });
+    test('Fails with statuscode 400 if id is invalid', function () { return __awaiter(void 0, void 0, void 0, function () {
+        var invalidId;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    invalidId = '5a3d5da59070081a82a3445';
+                    return [4 /*yield*/, api
+                            .get("/api/v1/users/" + invalidId)
+                            .expect(400)];
+                case 1:
+                    _a.sent();
                     return [2 /*return*/];
             }
         });
@@ -156,32 +217,33 @@ describe('Viewing a specific user:', function () {
 });
 describe('Addition of a new user:', function () {
     test('A valid user can be added', function () { return __awaiter(void 0, void 0, void 0, function () {
-        var newUser, response, usernames;
+        var newUser, response, emails;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     newUser = {
-                        username: 'testUser',
+                        email: 'testUser@email.com',
                         name: 'Test User',
-                        password: 'pass123'
+                        password: 'pass123',
+                        isEnabled: true
                     };
-                    return [4 /*yield*/, api.post('/api/users')
+                    return [4 /*yield*/, api.post('/api/v1/users')
                             .send(newUser)
                             .expect(201)
                             .expect('Content-Type', /application\/json/)];
                 case 1:
                     _a.sent();
-                    return [4 /*yield*/, api.get('/api/users')];
+                    return [4 /*yield*/, api.get('/api/v1/users')];
                 case 2:
                     response = _a.sent();
-                    usernames = response.body.map(function (user) { return user.username; });
+                    emails = response.body.map(function (user) { return user.email; });
                     expect(response.body).toHaveLength(initialUsers.length + 1);
-                    expect(usernames).toContain('testUser'.toLowerCase());
+                    expect(emails).toContain(newUser.email.toLowerCase());
                     return [2 /*return*/];
             }
         });
     }); });
-    test('User without username is not added', function () { return __awaiter(void 0, void 0, void 0, function () {
+    test('User without email is not added', function () { return __awaiter(void 0, void 0, void 0, function () {
         var newUser;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -189,7 +251,7 @@ describe('Addition of a new user:', function () {
                     newUser = {
                         password: 'ABC123'
                     };
-                    return [4 /*yield*/, api.post('/api/users')
+                    return [4 /*yield*/, api.post('/api/v1/users')
                             .send(newUser)
                             .expect(400)];
                 case 1:
@@ -198,7 +260,35 @@ describe('Addition of a new user:', function () {
             }
         });
     }); });
-    afterAll(function () {
-        mongoose.connection.close();
-    });
+});
+describe('Deletion of a user:', function () {
+    test('Succeeds with status code 204 if id is valid', function () { return __awaiter(void 0, void 0, void 0, function () {
+        var userToDelete, id, usersAtEnd, emails;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    userToDelete = initialUsers[0];
+                    id = '';
+                    return [4 /*yield*/, user_1.User.find({ email: userToDelete.email })
+                            .then(function (foundUser) {
+                            id = foundUser[0].id;
+                        })];
+                case 1:
+                    _a.sent();
+                    return [4 /*yield*/, api.delete("/api/v1/users/" + id).expect(204)];
+                case 2:
+                    _a.sent();
+                    return [4 /*yield*/, user_1.User.find({})];
+                case 3:
+                    usersAtEnd = _a.sent();
+                    expect(usersAtEnd).toHaveLength(initialUsers.length - 1);
+                    emails = usersAtEnd.map(function (r) { return r.email; });
+                    expect(emails).not.toContain(userToDelete.email);
+                    return [2 /*return*/];
+            }
+        });
+    }); });
+});
+afterAll(function () {
+    mongoose.connection.close();
 });

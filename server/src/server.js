@@ -60,7 +60,7 @@ app.use(express.static(path.resolve(__dirname, '/client-app/build')));
 // Send all requests to paths at '/api/v1/grocery-items'... to groceryItemsRouter
 app.use('/api/v1/grocery-items/', grocery_items_1.default);
 // Send all requests to paths at '/users'... to usersRouter
-app.use('/api/users', users_1.default);
+app.use('/api/v1/users', users_1.default);
 app.get('/', function (req, res) {
     res.json({ message: 'Hellooo World from Server!' });
 });

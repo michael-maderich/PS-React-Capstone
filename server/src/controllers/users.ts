@@ -24,11 +24,12 @@ usersRouter.get('/:id', (req, res, next) => {
 	logger.info('User ID:', id);
 	User.findById(id)
 		.then(requestedUser => {
-			if (requestedUser) res.status(200).json(requestedUser);
-			else {
+			if (!requestedUser) {
 				logger.info(`Invalid endpoint - ${req.path}.`);
 				res.status(404).end();
+				return;
 			}
+			res.status(200).json(requestedUser);
 		})
 		.catch( error => {
 			// logger.info(`Error - ${error.message}`);
@@ -40,9 +41,9 @@ usersRouter.get('/:id', (req, res, next) => {
 // TODO: Add apidoc documentation
 /*********** NEED TO CHECK IF USER ALREADY EXISTS ***************************************************************/
 usersRouter.post('/', async (req, res, next) => {
-	const { username, name, password } = req.body;
-	//console.log(username, name, password);
-	if (!username || !name || !password) {
+	const { email, name, password, isEnabled } = req.body;
+	//console.log(email, name, password);
+	if (!email || !name || !password) {
 		res.statusMessage = `Error - malformed POST body: ${JSON.stringify(req.body)}`;
 		return res.status(400).end(); // 400: Bad Request
 	}
@@ -51,10 +52,11 @@ usersRouter.post('/', async (req, res, next) => {
 
 	// Create mongoose User model instance. We can then save this to mongoDB as a document
 	const newUser = new User({
-		username:username,
+		email:email.toLowerCase(),
 		name:name,
 		passwordHash:passwordHash,
-		dateAdded: new Date()
+		dateAdded: new Date(),
+		isEnabled:isEnabled || true
 	});
 	// Save to mongoDB
 	newUser.save()

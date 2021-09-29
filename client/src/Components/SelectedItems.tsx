@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { PRODUCT_TYPE } from "./type-defs/typeDefs";
+import { PRODUCT_TYPE } from "../type-defs/typeDefs";
 
 function SelectedItems({ items, handleCheckboxToggle }:{items:PRODUCT_TYPE[], handleCheckboxToggle:any}) {
 	const itemsSelected = items.filter( (item:PRODUCT_TYPE) => item.checked === true);

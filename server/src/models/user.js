@@ -3,22 +3,37 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
 var mongoose = require("mongoose");
 var userSchema = new mongoose.Schema({
-    username: {
+    email: {
+        // Email will be unique username
         type: String,
         unique: true,
         required: true
     },
-    name: String,
     passwordHash: {
         type: String,
         required: true
     },
+    name: {
+        type: String,
+        required: true
+    },
+    phone: String,
+    address: String,
+    city: String,
+    state: String,
+    preferredPayment: String,
+    paymentHandle: String,
     dateAdded: {
-        type: Date,
+        type: Date
     },
     dateUpdated: {
         type: Date
-    }
+    },
+    role: String,
+    isEnabled: {
+        type: Boolean,
+        required: true
+    },
     // externalFieldRef: {
     // 	type: mongoose.Schema.Types.ObjectId,
     // 	ref: 'OtherDocument'
@@ -31,7 +46,6 @@ userSchema.set('toJSON', {
         returnedObject.id = returnedObject._id.toString();
         delete returnedObject._id;
         delete returnedObject.__v;
-        returnedObject.username = returnedObject.username.toLowerCase();
         delete returnedObject.passwordHash; // Password should not be revealed
     }
 });
