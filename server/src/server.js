@@ -20,15 +20,15 @@ var grocery_items_1 = require("./controllers/grocery-items");
 var logger = require("./utils/logger");
 var middleware = require("./utils/middleware");
 // DB config
-//const MONGODB_URI = config.MONGODB_URI;	// For heroku deployment, be sure to use cli command 'heroku config:set MONGODB_URI=<full path>'
+//const MONGO_URI = config.MONGO_URI;	// For heroku deployment, be sure to use cli command 'heroku config:set MONGO_URI=<full path>'
 /** Connect to our MongoDB database **/
 // Configure mongoose to tell us if we succeed or if we fail to connect to the DB
-//mongoose.connection.on('open', () => logger.error(`MongoDB: Successfully connected to ${MONGODB_URI}`));
-//mongoose.connection.on('error', (error) => logger.error(`MongoDB: Failed to connect to ${MONGODB_URI}. Error ${error.message}`));
+//mongoose.connection.on('open', () => logger.error(`MongoDB: Successfully connected to ${MONGO_URI}`));
+//mongoose.connection.on('error', (error) => logger.error(`MongoDB: Failed to connect to ${MONGO_URI}. Error ${error.message}`));
 logger.info('MongoDB: Attempting to connect ...');
 var mongoOptions = { useUnifiedTopology: true, useNewUrlParser: true }; // Options object needed because some standard properties are deprecated
 mongoose
-    .connect(config.MONGODB_URI, mongoOptions)
+    .connect(config.MONGO_URI, mongoOptions)
     .then(function () { return logger.info('Connected to MongoDB!'); }) // should do express stuff after successful connection, no?
     .catch(function (error) { return logger.error("MongoDB Error: " + error.message); });
 /**

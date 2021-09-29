@@ -2,5 +2,10 @@
     "compilerOptions": {
         "target": "ES5",
         "rootDir": "."
-    }
+    },
+	"include": [
+		"src",
+		"src/*",
+		"src/**/*"
+	]
 }

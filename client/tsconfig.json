@@ -21,6 +21,7 @@
     "strict": true
   },
   "include": [
-    "src"
+    "src/services/",
+	"src/type-defs/"
   ]
 }
