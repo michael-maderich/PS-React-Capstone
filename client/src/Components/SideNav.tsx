@@ -45,7 +45,7 @@ function SideNav({ items }:{items:PRODUCT_TYPE[]}) {
 						newItem={newItem}
 						setNewItem={setNewItem}
 						items={items}
-						type={PRODUCT_TYPE_NAMES.fruits}
+						type={PRODUCT_CATEGORIES.fruits}
 						handleCheckboxToggle={handleCheckboxToggle}
 						handleInputChange={handleInputChange}
 						handleInputSubmit={handleInputSubmit}
@@ -56,7 +56,7 @@ function SideNav({ items }:{items:PRODUCT_TYPE[]}) {
 						newItem={newItem}
 						setNewItem={setNewItem}
 						items={items}
-						type={PRODUCT_TYPE_NAMES.vegetables}
+						type={PRODUCT_CATEGORIES.vegetables}
 						handleCheckboxToggle={handleCheckboxToggle}
 						handleInputChange={handleInputChange}
 						handleInputSubmit={handleInputSubmit}

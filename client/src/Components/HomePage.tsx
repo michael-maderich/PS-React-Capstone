@@ -9,11 +9,9 @@ function HomePage({ items }: { items: PRODUCT_TYPE[] }) {
 	}, []);
 
 	return (
-		<div id='main-content'>
-			<div id='center-content'>
-				<p>The Little Store</p>
-				<img src='./static/images/Main_BG.jpg' alt='Stockpile' />
-			</div>
+		<div id='center-content'>
+			<p id='page-title'>The Little Store</p>
+			<img src='./static/images/Main_BG.jpg' alt='Stockpile' />
 		</div>
 	);
 }

@@ -1,5 +1,5 @@
 @charset "ISO-8859-1";
-	   #center-content p {
+	   #center-content #page-title {
 			font-family: 'Inknut Antiqua', Verdana, Geneva, Tahoma, sans-serif;
 			font-size: 4em;
 		}

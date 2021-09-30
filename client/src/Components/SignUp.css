@@ -19,6 +19,12 @@ form .text-field {
 #left-img-content img {
     height:20em;
 }
+#center-content p {
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
+	font-size: 1rem;
+	font-weight:400;
+	line-height:1.5;
+}
 #right-img-content {
     float:right;
     position:absolute;

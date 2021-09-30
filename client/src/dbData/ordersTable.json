@@ -1,0 +1,12 @@
+[
+	{ "orderNum": 3, "customerId": 14, "orderDateTime": "2021-06-27 21:56:13", "reqDeliveryDateTime": null, "status": "Confirmed", "comments": null, "orderDetails": [{ "upc": "011111023659", "qty": 2, "price": 4, "lineNumber": 1 }, { "upc": "011111025837", "qty": 2, "price": 4, "lineNumber": 2 }, { "upc": "037000695769", "qty": 3, "price": 4, "lineNumber": 3 }, { "upc": "037000823650", "qty": 100, "price": 1, "lineNumber": 4 }, { "upc": "037000874522", "qty": 20, "price": 3.33, "lineNumber": 5 }, { "upc": "037000885825", "qty": 2, "price": 3.33, "lineNumber": 6 }, { "upc": "037000896036", "qty": 2, "price": 2, "lineNumber": 7 }, { "upc": "037000956624", "qty": 2, "price": 3, "lineNumber": 8 }, { "upc": "037000956648", "qty": 3, "price": 2, "lineNumber": 9 }, { "upc": "037000956785", "qty": 2, "price": 2, "lineNumber": 10 }, { "upc": "037000976226", "qty": 1, "price": 2, "lineNumber": 11 }, { "upc": "037000983293", "qty": 5, "price": 4, "lineNumber": 12 }, { "upc": "305213084008", "qty": 2, "price": 1, "lineNumber": 13 }]},
+	{ "orderNum": 4, "customerId": 14, "orderDateTime": "2021-06-27 22:15:55", "reqDeliveryDateTime": null, "status": "Confirmed", "comments": null },
+	{ "orderNum": 5, "customerId": 14, "orderDateTime": "2021-06-27 22:29:07", "reqDeliveryDateTime": null, "status": "Confirmed", "comments": null },
+	{ "orderNum": 6, "customerId": 14, "orderDateTime": "2021-06-27 22:29:57", "reqDeliveryDateTime": null, "status": "Confirmed", "comments": null },
+	{ "orderNum": 7, "customerId": 14, "orderDateTime": "2021-06-27 22:32:39", "reqDeliveryDateTime": null, "status": "Confirmed", "comments": null },
+	{ "orderNum": 8, "customerId": 14, "orderDateTime": "2021-06-27 22:33:25", "reqDeliveryDateTime": null, "status": "Confirmed", "comments": null },
+	{ "orderNum": 9, "customerId": 14, "orderDateTime": "2021-06-27 22:37:21", "reqDeliveryDateTime": null, "status": "Confirmed", "comments": null },
+	{ "orderNum": 10, "customerId": 14, "orderDateTime": "2021-06-27 22:44:00", "reqDeliveryDateTime": null, "status": "Confirmed", "comments": null },
+	{ "orderNum": 11, "customerId": 14, "orderDateTime": "2021-06-27 22:45:16", "reqDeliveryDateTime": null, "status": "Confirmed", "comments": null },
+	{ "orderNum": 15, "customerId": 35, "orderDateTime": "2021-06-29 03:38:53", "reqDeliveryDateTime": null, "status": "Confirmed", "comments": null, "orderDetails": [{ "orderNum": 15, "upc": "037000874522", "qty": 1, "price": 3.33, "lineNumber": 1 }]}
+]

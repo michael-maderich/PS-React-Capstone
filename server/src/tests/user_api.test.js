@@ -61,19 +61,22 @@ var user_1 = require("../models/user");
 var passwordHash = 'pass123'; //hashPassword('pass123').then( hashedPassword => hashedPassword);
 var initialUsers = [
     { 'email': 'scruffmcgruff@yahoo.com',
-        'name': 'Michael Maderich',
+        'firstName': 'Michael',
+        'lastName': 'Maderich',
         'passwordHash': passwordHash,
         'isEnabled': true
     },
     {
         'email': 'CPrentzler@aol.com',
-        'name': 'Charisse Prentzler',
+        'firstName': 'Charisse',
+        'lastName': 'Prentzler',
         'passwordHash': passwordHash,
         'isEnabled': true
     },
     {
         'email': 'testytest@hotmail.com',
-        'name': 'Testy McTest',
+        'firstName': 'Testy',
+        'lastName': 'McTest',
         'passwordHash': passwordHash,
         'isEnabled': true
     }
@@ -223,7 +226,8 @@ describe('Addition of a new user:', function () {
                 case 0:
                     newUser = {
                         email: 'testUser@email.com',
-                        name: 'Test User',
+                        firstName: 'Test',
+                        lastName: 'User',
                         password: 'pass123',
                         isEnabled: true
                     };

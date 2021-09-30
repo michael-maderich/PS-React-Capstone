@@ -1,44 +1,15 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 //import PropTypes from "prop-types";
 import './SignUp.css';
-import { PRODUCT_TYPE } from '../type-defs/typeDefs';
+import { USER_TYPE, States, PaymentMethods } from '../type-defs/typeDefs';
 
-function HomePage({ items }: { items: PRODUCT_TYPE[] }) {
+function SignUp({ newUser, setNewUser, errorMessage, setErrorMessage, handleSignUpFormChange, handleSignUpFormSubmit } ) {
 	useEffect(() => {
 		document.title = 'The Little Store - Sign Up';
 	}, []);
 
 	return (
-		<div id='main-content'>
-			<div id='center-content'>
-				<p>The Little Store</p>
-				<img src='./static/images/Main_BG.jpg' alt='Stockpile' />
-			</div>
-		</div>
-	);
-}
-
-// HomePage.propTypes = {
-// 	items: PropTypes.array.isRequired
-// };
-
-export default HomePage;
-
-/*
-<!DOCTYPE html>
-<html lang="en">
-	<head>
-		<jsp:include page="headElement.jsp">
-			<jsp:param name="title" value="The Little Store - Sign Up" />
-			<jsp:param name="page" value="signup" />
-		</jsp:include>
-	</head>
-	<body>
-		<header>
-			<jsp:include page="basicHeader.jsp"></jsp:include>
-		</header>
-		<div id="main-content">
-	        <jsp:include page="sideNav.jsp"></jsp:include>
+		<>
 			<div id="left-img-content">
 				<img src="https://azcdn.messenger.pgsitecore.com/en-us/-/media/Febreze/Images/Products/product_primary_images/November%202020%20Updates/PDP_DT_AE_GAIN_HoneyBerryHula.png" alt="Febreze Air Honey Berry Hula" />
 			</div>
@@ -46,64 +17,93 @@ export default HomePage;
 				<div id="registration-panel">
 					<h2>New User Sign-Up</h2>
 					<p>Already Registered? Click <a href="/login">here</a> to Log In</p>
-					<form:form method="POST" modelAttribute="customerForm" class="form-signin">
-						<spring:bind path="firstName">
-								<form:errors path="firstName"></form:errors>${status.error ? '<br />' : ''}
-							<div class="form-group ${status.error ? 'has-error' : ''}">
-								<label for="firstName"><form:input path="firstName" id="firstName" type="text"
-								placeholder=" First Name" class="text-field" required="true" autofocus="true"></form:input></label>
-							</div>
-						</spring:bind>
-						<spring:bind path="lastName">
-							<div class="form-group ${status.error ? 'has-error' : ''}">
-								<form:errors path="lastName"></form:errors>${status.error ? '<br />' : ''}
-								<label for="lastName"><form:input path="lastName" id="lastName" type="text"
-								placeholder=" Last Name" class="text-field" required="true"></form:input></label>
-							</div>
-						</spring:bind>
-						<spring:bind path="email">
-							<div class="form-group ${status.error ? 'has-error' : ''}">
-								<form:errors path="email"></form:errors>${status.error ? '<br />' : ''}
-								<label for="email"><form:input path="email" id="email" type="email"
-								placeholder=" Email Address" class="text-field" required="true" autocomplete="username"></form:input></label>
-							</div>
-						</spring:bind>
-						<spring:bind path="password">
-							<div class="form-group ${status.error ? 'has-error' : ''}">
-								<form:errors path="password"></form:errors>${status.error ? '<br />' : ''}
-								<label for="password"><form:input path="password" id="password" type="password"
-								placeholder=" Password" class="text-field" required="true" autocomplete="new-password"></form:input></label>
-							</div>
-						</spring:bind>
-						<spring:bind path="passwordConfirm">
-							<div class="form-group ${status.error ? 'has-error' : ''}">
-								<form:errors path="passwordConfirm"></form:errors>${status.error ? '<br />' : ''}
-								<label for="passwordConfirm"><form:input path="passwordConfirm" id="passwordConfirm"
-								type="password" placeholder=" Confirm Password" class="text-field" required="true" autocomplete="new-password"></form:input></label>
-							</div>
-						</spring:bind>
+					<form onSubmit={handleSignUpFormSubmit} className="form-signin">
+						{/* {errorMessage ? <span>{errorMessage}<br /></span> : ''} */}
+						<div className={`form-group ${errorMessage ? 'has-error' : ''}`}>
+							<label htmlFor="firstName">
+								<input name="firstName" id="firstName" type="text" placeholder=" First Name"
+								value={newUser.firstName || ''}
+								onChange={handleSignUpFormChange} className="text-field" required={true} autoFocus={true} />
+							</label>
+						</div>
+						{/* {errorMessage ? <span>{errorMessage}<br /></span> : ''} */}
+						<div className={errorMessage ? 'form-group has-error' : 'form-group'}>
+							<label htmlFor="lastName">
+								<input name="lastName" id="lastName" type="text" placeholder=" Last Name"
+								value={newUser.lastName || ''}
+								onChange={handleSignUpFormChange} className="text-field" required={true} />
+							</label>
+						</div>
+						<div className={errorMessage ? 'form-group has-error' : 'form-group'}>
+							<label htmlFor="email">
+								<input name="email" id="email" type="email" placeholder=" Email"
+								value={newUser.email || ''}
+								onChange={handleSignUpFormChange} className="text-field" required={true} autoComplete="username" />
+							</label>
+						</div>
+						<div className={errorMessage ? 'form-group has-error' : 'form-group'}>
+							<label htmlFor="password">
+								<input name="password" id="password" type="password" placeholder=" Password"
+								value={newUser.password || ''}
+								onChange={handleSignUpFormChange} className="text-field" required={true} autoComplete="new-password" />
+							</label>
+						</div>
+						<div className={errorMessage ? 'form-group has-error' : 'form-group'}>
+							<label htmlFor="passwordConfirm">
+								<input name="passwordConfirm" id="passwordConfirm" type="password" placeholder=" Confirm Password"
+								value={newUser.passwordConfirm || ''}
+								onChange={handleSignUpFormChange} className="text-field" required={true} autoComplete="new-password" />
+							</label>
+						</div>
 						<p>Meet-Up Address (Optional):</p>
-						<label for="address"><form:input path="address" id="address" name="address" type="text" placeholder=" Street Address (optional)" class="text-field"></form:input></label>
-						<br /><label for="city"><form:input path="city" id="city" name="city" type="text" placeholder=" City (optional)" class="text-field"></form:input></label>
-						<label for="statedd">
-							<form:select path="state" name="state" id="state">
-							<c:forEach items="${listStates}" var="st">
-								<option value="${st}" ${st=="PA" ? 'selected' : ''}>${st}</option>
-							</c:forEach>
-							</form:select>
+						<label htmlFor="address">
+							<input name="address" id="address" type="text" placeholder=" Street Address (optional)"
+							value={newUser.address || ''}
+							onChange={handleSignUpFormChange} className="text-field" />
 						</label>
-						<br /><label for="phone"><form:input path="phone" id="phone" name="phone" type="text" placeholder=" Phone Number (optional)" class="text-field"></form:input></label>
-						<br /><label for="submit"><form:button id="submit" name="submit" type="submit">Submit</form:button></label>
-					</form:form>
+						<br /><label htmlFor="city">
+							<input name="city" id="city" type="text" placeholder=" City (optional)"
+							value={newUser.city || ''}
+							onChange={handleSignUpFormChange} className="text-field" />
+						</label>
+						<label htmlFor="state">
+							<select
+								name='state'
+								id='state'
+								value={newUser.state || 'PA'}
+								onChange={handleSignUpFormChange}
+							>
+								{ States.map((state) => {
+									return (
+								<option value={state}key={state}>
+									{state}
+								</option>
+									);
+								}) }
+							</select>
+						</label>
+						<br /><label htmlFor="phone">
+							<input name="phone" id="phone" type="text" placeholder=" Phone Number (optional)"
+							value={newUser.phone || null} onChange={handleSignUpFormChange} className="text-field" />
+						</label>
+						<br /><label htmlFor="submit">
+							<button id="submit" name="submit" type='submit'
+								disabled={!(newUser.email && newUser.password && newUser.passwordConfirm
+											&& newUser.firstName && newUser.lastName)}
+							>Submit</button>
+						</label>
+					</form>
 				</div>
 			</div>
 			<div id="right-img-content">
 				<img src="https://azcdn.messenger.pgsitecore.com/en-us/-/media/Febreze/Images/Products/product_primary_images/February%202021%20Updates/US_DT_PDP_AIR_UNS_Fresh.png" alt="Febreze Air Unstopables Fresh Scent" />
 			</div>
-		</div>
-        <footer>
-			<jsp:include page="basicFooter.jsp"></jsp:include>
-        </footer>
-	</body>
-</html>
-*/
+		</>
+	);
+}
+
+// SignUp.propTypes = {
+// 	items: PropTypes.array.isRequired
+// };
+
+export default SignUp;

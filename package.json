@@ -4,7 +4,9 @@
 	"description": "Capstone project for Per Scholas React course 2021",
 	"main": "index.js",
 	"scripts": {
-		"transpile": "cd server/src && tsc -watch && cd ../../",
+		"transpile-back": "cd server && tsc -watch && cd ../../",
+		"transpile-front": "cd client && tsc -watch && cd ../../",
+		"transpile": "start npm run transpile-back && npm run transpile-front",
 		"start-database": "C:\\Progra~1\\MongoDB\\Server\\5.0\\bin\\mongod",
 		"start-server": "start npm run start-database && start npm run transpile && npm run --prefix server dev",
 		"start-client": "npm run --prefix client start",

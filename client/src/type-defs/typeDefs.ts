@@ -1,26 +1,32 @@
+export type InputElement = HTMLInputElement | HTMLTextAreaElement;
+
 export type PRODUCT_TYPE = {
 	name: string;
 	type: string;
 	checked: boolean;
 };
 
+//export type States = 'NJ' | 'PA';
+export const States:string[] = ['NJ', 'PA'];
+//export enum States {NJ, PA};
+export const PaymentMethods:string[] = ['Cash', 'CashApp', 'Venmo', 'Paypal', 'Zelle', 'Other'];
+//export enum PaymentMethods {CASH, CASHAPP, VENMO, PAYPAL, ZELLE, OTHER};
+
 /**
  * Analogue to Customer table
  */
-export enum States {NJ, PA};
-export enum PaymentMethods {CASH, CASHAPP, VENMO, PAYPAL, ZELLE, OTHER};
-
 export type USER_TYPE = {
 	id?: string,
-	username?: string,
 	email: string,
-	password: string,
-	name: string,			// Split into first/last names
+	password?: string,
+	passwordConfirm?: string,
+	firstName: string,
+	lastName: string,
 	phone?: string,
 	address?: string,
 	city?: string,
-	state?: States,
-	preferredPayment?: PaymentMethods,
+	state?: string,	// States,
+	preferredPayment?: string, //PaymentMethods,
 	paymentHandle?: string,
 	dateAdded?: Date,
 	dateUpdated?: Date,
