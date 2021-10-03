@@ -3,7 +3,7 @@ const ErrorNotification = ( {message}:any ) => {
         return null;
     }
     return (
-        <div style={({textAlign:"center", color:"red", paddingTop:16})} className="error">
+        <div style={{textAlign:"center", color:"red", paddingTop:16}} className="error">
             {message}
         </div>
     )

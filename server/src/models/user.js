@@ -4,7 +4,6 @@ exports.User = void 0;
 var mongoose = require("mongoose");
 var userSchema = new mongoose.Schema({
     email: {
-        // Email will be unique username
         type: String,
         unique: true,
         required: true
@@ -13,7 +12,11 @@ var userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    name: {
+    firstName: {
+        type: String,
+        required: true
+    },
+    lastName: {
         type: String,
         required: true
     },
@@ -23,17 +26,13 @@ var userSchema = new mongoose.Schema({
     state: String,
     preferredPayment: String,
     paymentHandle: String,
-    dateAdded: {
-        type: Date
-    },
-    dateUpdated: {
-        type: Date
-    },
+    dateAdded: Date,
+    dateUpdated: Date,
     role: String,
     isEnabled: {
         type: Boolean,
         required: true
-    },
+    }
     // externalFieldRef: {
     // 	type: mongoose.Schema.Types.ObjectId,
     // 	ref: 'OtherDocument'

@@ -1,9 +1,24 @@
 export type InputElement = HTMLInputElement | HTMLTextAreaElement;
 
+export type CATEGORY_OBJECT = {	// Array of category/subcategory-list objects
+	mainCategories: string[],			// A Main product category name
+	subCategories: [string[]]			// That Main category's subcategories
+}
+
 export type PRODUCT_TYPE = {
+	upc: number;
+	categoryMain: string;
+	categorySpecific: string;
 	name: string;
-	type: string;
-	checked: boolean;
+	options: string;
+	size: string;
+	cost: number;
+	basePrice: number;
+	currentPrice: number;
+	onSale: boolean;
+	stockQty: number;
+	description: string;
+	image: string;
 };
 
 //export type States = 'NJ' | 'PA';

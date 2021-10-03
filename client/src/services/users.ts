@@ -3,7 +3,8 @@ import { USER_TYPE } from '../type-defs/typeDefs';
 // const URL = String(process.env.REACT_APP_BASE_URL);
 // const API_PATH = String(process.env.REACT_APP_API_BASE);
 const BASE_URL: string =
-	String(process.env.REACT_APP_BASE_URL).concat(String(process.env.REACT_APP_API_BASE)).concat('/api/v1/users') || 'api/v1/users';
+	String(process.env.REACT_APP_API_HOST).concat(String(process.env.REACT_APP_API_BASE)).concat('/users')
+	|| 'http://localhost:9999'.concat(String(process.env.REACT_APP_API_BASE)).concat('/users');
 
 // code for these HTTP method calls is in /server/src/controllers/users.ts
 const getAll = () => {

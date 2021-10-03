@@ -41,23 +41,29 @@ usersRouter.get('/:id', (req, res, next) => {
 // TODO: Add apidoc documentation
 /*********** NEED TO CHECK IF USER ALREADY EXISTS ***************************************************************/
 usersRouter.post('/', async (req, res, next) => {
-	const { email, name, password, isEnabled } = req.body;
+	const userData = req.body;
+	const { email, firstName, lastName, password, isEnabled } = userData;
 	//console.log(email, name, password);
-	if (!email || !name || !password) {
+	if (!email || !firstName || !lastName || !password) {
 		res.statusMessage = `Error - malformed POST body: ${JSON.stringify(req.body)}`;
 		return res.status(400).end(); // 400: Bad Request
 	}
 
 	const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
+	delete userData.password;
 
-	// Create mongoose User model instance. We can then save this to mongoDB as a document
-	const newUser = new User({
-		email:email.toLowerCase(),
-		name:name,
-		passwordHash:passwordHash,
+	// Format user data to fit DB schema and for capitalization, etc
+	const formattedUserData = {
+		...userData,
+		email: email.toLowerCase(),
+		firstName: firstName.charAt(0).concat(firstName.slice(1)),
+		lastName: lastName.charAt(0).concat(lastName.slice(1)),
+		passwordHash: passwordHash,
 		dateAdded: new Date(),
-		isEnabled:isEnabled || true
-	});
+		isEnabled: isEnabled || true
+	};
+	// Create mongoose User model instance. We can then save this to mongoDB as a document
+	const newUser = new User(formattedUserData);
 	// Save to mongoDB
 	newUser.save()
 		.then((savedItem) => res.status(201).json(savedItem)) // need to send URI in Location header field? (as per official html specs)

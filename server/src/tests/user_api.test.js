@@ -166,7 +166,8 @@ describe('Viewing a specific user:', function () {
                     delete resultUser.passwordHash;
                     processedUserToView = JSON.parse(JSON.stringify(userToView));
                     expect(resultUser.email).toEqual(processedUserToView.email);
-                    expect(resultUser.name).toEqual(processedUserToView.name);
+                    expect(resultUser.firstName).toEqual(processedUserToView.firstName);
+                    expect(resultUser.lastName).toEqual(processedUserToView.lastName);
                     return [2 /*return*/];
             }
         });
@@ -181,7 +182,7 @@ describe('Viewing a specific user:', function () {
                         return __generator(this, function (_a) {
                             switch (_a.label) {
                                 case 0:
-                                    user = new user_1.User({ email: 'willremovethissoon', name: 'Delete This', password: 'blah' });
+                                    user = new user_1.User({ email: 'willremovethissoon', firstName: 'Delete', lastName: 'This', password: 'blah', isEnabled: true });
                                     return [4 /*yield*/, user.save()];
                                 case 1:
                                     _a.sent();

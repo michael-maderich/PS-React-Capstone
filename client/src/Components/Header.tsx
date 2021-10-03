@@ -17,7 +17,7 @@ function HomePage({ userName }:{userName:string}) {
 	    	        <input type='hidden' name='_csrf.parameterName' value='_csrf.token'/>
 					<input type='submit' id='logoutbtn' name='logoutbtn' value='Sign Out' className='btn btn-sm btn-primary btn-block' />
 				</> : null}
-					<a href={userName ? '/account' : '/signup'}>
+					<a href={userName ? '/account' : '/login'}>
 						<i className='fas fa-user-alt' title={userName ? 'Account' : 'Sign Up/Login'}></i></a>
 					<a href='/cart'><i className='fas fa-shopping-cart' title='Shopping Cart'></i></a>
 				</form>				

@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -75,26 +86,23 @@ usersRouter.get('/:id', function (req, res, next) {
 // TODO: Add apidoc documentation
 /*********** NEED TO CHECK IF USER ALREADY EXISTS ***************************************************************/
 usersRouter.post('/', function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, email, name, password, isEnabled, passwordHash, newUser;
-    return __generator(this, function (_b) {
-        switch (_b.label) {
+    var userData, email, firstName, lastName, password, isEnabled, passwordHash, formattedUserData, newUser;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
             case 0:
-                _a = req.body, email = _a.email, name = _a.name, password = _a.password, isEnabled = _a.isEnabled;
+                userData = req.body;
+                email = userData.email, firstName = userData.firstName, lastName = userData.lastName, password = userData.password, isEnabled = userData.isEnabled;
                 //console.log(email, name, password);
-                if (!email || !name || !password) {
+                if (!email || !firstName || !lastName || !password) {
                     res.statusMessage = "Error - malformed POST body: " + JSON.stringify(req.body);
                     return [2 /*return*/, res.status(400).end()]; // 400: Bad Request
                 }
                 return [4 /*yield*/, bcrypt.hash(password, SALT_ROUNDS)];
             case 1:
-                passwordHash = _b.sent();
-                newUser = new user_1.User({
-                    email: email.toLowerCase(),
-                    name: name,
-                    passwordHash: passwordHash,
-                    dateAdded: new Date(),
-                    isEnabled: isEnabled || true
-                });
+                passwordHash = _a.sent();
+                delete userData.password;
+                formattedUserData = __assign(__assign({}, userData), { email: email.toLowerCase(), firstName: firstName.charAt(0).concat(firstName.slice(1)), lastName: lastName.charAt(0).concat(lastName.slice(1)), passwordHash: passwordHash, dateAdded: new Date(), isEnabled: isEnabled || true });
+                newUser = new user_1.User(formattedUserData);
                 // Save to mongoDB
                 newUser.save()
                     .then(function (savedItem) { return res.status(201).json(savedItem); }) // need to send URI in Location header field? (as per official html specs)

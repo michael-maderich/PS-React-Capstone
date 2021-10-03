@@ -98,13 +98,14 @@ describe('Viewing a specific user:', () => {
 		const processedUserToView = JSON.parse(JSON.stringify(userToView));
 
 		expect(resultUser.email).toEqual(processedUserToView.email);
-		expect(resultUser.name).toEqual(processedUserToView.name);
+		expect(resultUser.firstName).toEqual(processedUserToView.firstName);
+		expect(resultUser.lastName).toEqual(processedUserToView.lastName);
 	});
 
 	test('Fails with statuscode 404 if user does not exist', async () => {
 		const nonExistingId = async () => {
 			const user = new User(
-				{ email: 'willremovethissoon', name: 'Delete This', password:'blah' });
+				{ email: 'willremovethissoon', firstName: 'Delete', lastName: 'This', password:'blah' , isEnabled:true});
 			await user.save();
 			await user.remove();
 
@@ -126,6 +127,7 @@ describe('Viewing a specific user:', () => {
 });
 
 describe('Addition of a new user:', () => {
+	
 	test('A valid user can be added', async () => {
 		const newUser = {
 			email: 'testUser@email.com',
@@ -167,11 +169,9 @@ describe('Deletion of a user:', () => {
 		await api.delete(`/api/v1/users/${id}`).expect(204);
 
 		const usersAtEnd = await User.find({});
-
 		expect(usersAtEnd).toHaveLength(initialUsers.length - 1);
 
 		const emails = usersAtEnd.map(r => r.email);
-
 		expect(emails).not.toContain(userToDelete.email);
 	});
 });

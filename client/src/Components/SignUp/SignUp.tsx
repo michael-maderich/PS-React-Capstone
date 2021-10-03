@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 //import PropTypes from "prop-types";
 import './SignUp.css';
-import { USER_TYPE, States, PaymentMethods } from '../type-defs/typeDefs';
+import { States } from '../../type-defs/typeDefs';
 
 function SignUp({ newUser, setNewUser, errorMessage, setErrorMessage, handleSignUpFormChange, handleSignUpFormSubmit } ) {
 	useEffect(() => {

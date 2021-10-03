@@ -15,7 +15,7 @@ import helmet = require('helmet');
 
 // Routers
 import usersRouter from './controllers/users';
-import groceryItemsRouter from './controllers/grocery-items';
+import productsRouter from './controllers/products';
 
 // import logger module
 import logger = require('./utils/logger');
@@ -71,8 +71,8 @@ app.use(express.static(path.resolve(__dirname, '/client-app/build')));
  * Express server routes
  */
 
-// Send all requests to paths at '/api/v1/grocery-items'... to groceryItemsRouter
-app.use('/api/v1/grocery-items/', groceryItemsRouter);
+// Send all requests to paths at '/api/v1/product'... to productsRouter
+app.use('/api/v1/product/', productsRouter);
 // Send all requests to paths at '/users'... to usersRouter
 app.use('/api/v1/users', usersRouter);
 

@@ -15,7 +15,7 @@ var path = require("path"); // for something...
 var helmet = require("helmet");
 // Routers
 var users_1 = require("./controllers/users");
-var grocery_items_1 = require("./controllers/grocery-items");
+var products_1 = require("./controllers/products");
 // import logger module
 var logger = require("./utils/logger");
 var middleware = require("./utils/middleware");
@@ -57,8 +57,8 @@ app.use(express.static(path.resolve(__dirname, '/client-app/build')));
 /**
  * Express server routes
  */
-// Send all requests to paths at '/api/v1/grocery-items'... to groceryItemsRouter
-app.use('/api/v1/grocery-items/', grocery_items_1.default);
+// Send all requests to paths at '/api/v1/product'... to productsRouter
+app.use('/api/v1/product/', products_1.default);
 // Send all requests to paths at '/users'... to usersRouter
 app.use('/api/v1/users', users_1.default);
 app.get('/', function (req, res) {

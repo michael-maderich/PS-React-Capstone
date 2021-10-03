@@ -1,8 +1,7 @@
 import mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-	email: {
-		// Email will be unique username
+	email: {		// Email will be unique username
 		type: String,
 		unique: true,
 		required: true
@@ -11,7 +10,11 @@ const userSchema = new mongoose.Schema({
 		type: String,
 		required: true
 	},
-	name: {
+	firstName: {
+		type: String,
+		required: true
+	},
+	lastName: {
 		type: String,
 		required: true
 	},
@@ -21,17 +24,13 @@ const userSchema = new mongoose.Schema({
 	state: String,
 	preferredPayment: String,
 	paymentHandle: String,
-	dateAdded: {
-		type: Date
-	},
-	dateUpdated: {
-		type: Date
-	},
+	dateAdded: Date,
+	dateUpdated: Date,
 	role: String, // enum?
-	isEnabled: {
+	isEnabled: {		// To have users deletable but retain info and order history, etc
 		type: Boolean,
 		required: true
-	},
+	}
 	// externalFieldRef: {
 	// 	type: mongoose.Schema.Types.ObjectId,
 	// 	ref: 'OtherDocument'

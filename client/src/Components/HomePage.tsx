@@ -1,9 +1,8 @@
 import { useEffect } from 'react';
 //import PropTypes from "prop-types";
 import './HomePage.css';
-import { PRODUCT_TYPE } from '../type-defs/typeDefs';
 
-function HomePage({ items }: { items: PRODUCT_TYPE[] }) {
+function HomePage() {		// deconstructed prop typescript format { items }: { items: PRODUCT_TYPE[] }
 	useEffect( () => {
 		document.title = 'The Little Store - Home';
 	}, []);
