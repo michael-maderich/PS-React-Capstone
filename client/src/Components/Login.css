@@ -9,9 +9,11 @@ form .text-field {
 	width:16em;
 }
 
-#bottom-img-content {
+/* #bottom-img-content {
+	position:relative;
+	z-index:-1;
 	margin-top:-2em;
-}
+} */
 #bottom-img-content img {
 	 width:12em;
 }

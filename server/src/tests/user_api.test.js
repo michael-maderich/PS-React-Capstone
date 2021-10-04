@@ -53,7 +53,20 @@ var supertest = require("supertest");
 var server_1 = require("../server");
 var api = supertest(server_1.default);
 var user_1 = require("../models/user");
-//import bcrypt = require('bcrypt');
+var API_PATH = process.env.API_BASE + "/users";
+// Helper function to retrieve all users from DB
+var usersInDb = function () { return __awaiter(void 0, void 0, void 0, function () {
+    var users;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, user_1.User.find({})];
+            case 1:
+                users = _a.sent();
+                return [2 /*return*/, users.map(function (u) { return u.toJSON(); })];
+        }
+    });
+}); };
+var bcrypt = require("bcrypt");
 // const hashPassword = async (password) => {
 // 	const hashedPass = await bcrypt.hash(password, 11);
 // 	return hashedPass;
@@ -100,12 +113,97 @@ beforeEach(function () { return __awaiter(void 0, void 0, void 0, function () {
         }
     });
 }); });
+describe('When there is initially one user in DB:', function () {
+    beforeEach(function () { return __awaiter(void 0, void 0, void 0, function () {
+        var passwordHash, user;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, user_1.User.deleteMany({})];
+                case 1:
+                    _a.sent();
+                    return [4 /*yield*/, bcrypt.hash('admin', 10)];
+                case 2:
+                    passwordHash = _a.sent();
+                    user = new user_1.User({
+                        email: 'admin@admin.com',
+                        passwordHash: passwordHash,
+                        firstName: 'Admin',
+                        lastName: 'Admin',
+                        isEnabled: true
+                    });
+                    return [4 /*yield*/, user.save()];
+                case 3:
+                    _a.sent();
+                    return [2 /*return*/];
+            }
+        });
+    }); });
+    test('Creation succeeds with a fresh username', function () { return __awaiter(void 0, void 0, void 0, function () {
+        var usersAtStart, newUser, usersAtEnd, usernames;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, usersInDb()];
+                case 1:
+                    usersAtStart = _a.sent();
+                    newUser = {
+                        email: 'username@random.com',
+                        firstName: 'Random',
+                        lastName: 'User',
+                        password: 'random',
+                        isEnabled: true
+                    };
+                    return [4 /*yield*/, api.post(API_PATH)
+                            .send(newUser)
+                            .expect(201)
+                            .expect('Content-Type', /application\/json/)];
+                case 2:
+                    _a.sent();
+                    return [4 /*yield*/, usersInDb()];
+                case 3:
+                    usersAtEnd = _a.sent();
+                    expect(usersAtEnd).toHaveLength(usersAtStart.length + 1);
+                    usernames = usersAtEnd.map(function (u) { return u['email']; });
+                    expect(usernames).toContain(newUser.email);
+                    return [2 /*return*/];
+            }
+        });
+    }); });
+    test('Creation fails with proper statuscode and message if username (email) already taken', function () { return __awaiter(void 0, void 0, void 0, function () {
+        var usersAtStart, newUser, result, usersAtEnd;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, usersInDb()];
+                case 1:
+                    usersAtStart = _a.sent();
+                    newUser = {
+                        email: 'admin@admin.com',
+                        firstName: 'Super',
+                        lastName: 'User',
+                        password: 'superuser',
+                        isEnabled: true
+                    };
+                    return [4 /*yield*/, api.post(API_PATH)
+                            .send(newUser)
+                            .expect(400)
+                            .expect('Content-Type', /application\/json/)];
+                case 2:
+                    result = _a.sent();
+                    expect(result.body.error).toContain('`email` to be unique');
+                    return [4 /*yield*/, usersInDb()];
+                case 3:
+                    usersAtEnd = _a.sent();
+                    expect(usersAtEnd).toHaveLength(usersAtStart.length);
+                    return [2 /*return*/];
+            }
+        });
+    }); });
+});
 describe('When there are initially some users saved:', function () {
     test('Users are returned as JSON', function () { return __awaiter(void 0, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, api
-                        .get('/api/v1/users')
+                        .get(API_PATH)
                         .expect(200)
                         .expect('Content-Type', /application\/json/)];
                 case 1:
@@ -118,7 +216,7 @@ describe('When there are initially some users saved:', function () {
         var response;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, api.get('/api/v1/users')];
+                case 0: return [4 /*yield*/, api.get(API_PATH)];
                 case 1:
                     response = _a.sent();
                     // execution gets here only after the HTTP request is complete
@@ -131,7 +229,7 @@ describe('When there are initially some users saved:', function () {
         var response, emails;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, api.get('/api/v1/users')];
+                case 0: return [4 /*yield*/, api.get(API_PATH)];
                 case 1:
                     response = _a.sent();
                     emails = response.body.map(function (user) { return user.email; });
@@ -156,7 +254,7 @@ describe('Viewing a specific user:', function () {
                 case 1:
                     _a.sent();
                     return [4 /*yield*/, api
-                            .get("/api/v1/users/" + id)
+                            .get(API_PATH + "/" + id)
                             .expect(200)
                             .expect('Content-Type', /application\/json/)];
                 case 2:
@@ -195,7 +293,7 @@ describe('Viewing a specific user:', function () {
                     }); };
                     validNonexistingId = nonExistingId;
                     return [4 /*yield*/, api
-                            .get("/api/v1/users/" + validNonexistingId)
+                            .get(API_PATH + "/" + validNonexistingId)
                             .expect(404)];
                 case 1:
                     _a.sent();
@@ -210,7 +308,7 @@ describe('Viewing a specific user:', function () {
                 case 0:
                     invalidId = '5a3d5da59070081a82a3445';
                     return [4 /*yield*/, api
-                            .get("/api/v1/users/" + invalidId)
+                            .get(API_PATH + "/" + invalidId)
                             .expect(400)];
                 case 1:
                     _a.sent();
@@ -232,13 +330,13 @@ describe('Addition of a new user:', function () {
                         password: 'pass123',
                         isEnabled: true
                     };
-                    return [4 /*yield*/, api.post('/api/v1/users')
+                    return [4 /*yield*/, api.post(API_PATH)
                             .send(newUser)
                             .expect(201)
                             .expect('Content-Type', /application\/json/)];
                 case 1:
                     _a.sent();
-                    return [4 /*yield*/, api.get('/api/v1/users')];
+                    return [4 /*yield*/, api.get(API_PATH)];
                 case 2:
                     response = _a.sent();
                     emails = response.body.map(function (user) { return user.email; });
@@ -256,7 +354,7 @@ describe('Addition of a new user:', function () {
                     newUser = {
                         password: 'ABC123'
                     };
-                    return [4 /*yield*/, api.post('/api/v1/users')
+                    return [4 /*yield*/, api.post(API_PATH)
                             .send(newUser)
                             .expect(400)];
                 case 1:
@@ -280,14 +378,14 @@ describe('Deletion of a user:', function () {
                         })];
                 case 1:
                     _a.sent();
-                    return [4 /*yield*/, api.delete("/api/v1/users/" + id).expect(204)];
+                    return [4 /*yield*/, api.delete(API_PATH + "/" + id).expect(204)];
                 case 2:
                     _a.sent();
                     return [4 /*yield*/, user_1.User.find({})];
                 case 3:
                     usersAtEnd = _a.sent();
                     expect(usersAtEnd).toHaveLength(initialUsers.length - 1);
-                    emails = usersAtEnd.map(function (r) { return r.email; });
+                    emails = usersAtEnd.map(function (r) { return r['email']; });
                     expect(emails).not.toContain(userToDelete.email);
                     return [2 /*return*/];
             }

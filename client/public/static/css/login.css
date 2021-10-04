@@ -9,8 +9,9 @@ form .text-field {
 	width:16em;
 }
 
-/* #bottom-img-content {
-}*/
+#bottom-img-content {
+	margin-top:0;
+}
 
 /* To re-center password field after addition of eye */
 #password {margin-left:1.3em;}

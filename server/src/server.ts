@@ -7,13 +7,15 @@
 import config = require('./utils/config');
 // import mongoose db module and express server module
 import mongoose = require('mongoose');
+import {ConnectOptions} from 'mongoose';
 import express = require('express');
-import path = require('path');		// for something...
+import path = require('path');		// For correct path to serve React client from backend
 //import cors = require('cors');	// Needed for app.use(cors) but doesn't work
 //const https = require('https');
 import helmet = require('helmet');
 
 // Routers
+import loginRouter from './controllers/login';
 import usersRouter from './controllers/users';
 import productsRouter from './controllers/products';
 
@@ -33,8 +35,8 @@ import middleware = require('./utils/middleware');
 logger.info('MongoDB: Attempting to connect ...');
 const mongoOptions = {useUnifiedTopology:true, useNewUrlParser:true}; // Options object needed because some standard properties are deprecated
 mongoose
-	.connect(config.MONGO_URI, mongoOptions)
-	.then( () => logger.info('Connected to MongoDB!'))		// should do express stuff after successful connection, no?
+	.connect(config.MONGO_URI, mongoOptions as ConnectOptions)
+	.then(() => logger.info('Connected to MongoDB!')) // should do express stuff after successful connection, no?
 	.catch(error => logger.error(`MongoDB Error: ${error.message}`));
 
 
@@ -70,11 +72,11 @@ app.use(express.static(path.resolve(__dirname, '/client-app/build')));
 /**
  * Express server routes
  */
-
-// Send all requests to paths at '/api/v1/product'... to productsRouter
-app.use('/api/v1/product/', productsRouter);
+// Send all requests to paths at '`${API_BASE'}/product'... to productsRouter
+app.use(`${process.env.API_BASE}/product/`, productsRouter);
 // Send all requests to paths at '/users'... to usersRouter
-app.use('/api/v1/users', usersRouter);
+app.use(`${process.env.API_BASE}/users`, usersRouter);
+app.use('/api/login', loginRouter);
 
 app.get('/', (req, res) => {
 	res.json({message:'Hellooo World from Server!'});

@@ -86,9 +86,7 @@ productsRouter.post('/', (req, res, next) => {
 		dateAdded: new Date()
 	}); // mongoose model item based on declared schema
 	// Save to mongoDB
-	newItem // so save command is performed on (newItem) Product =
-		// mongoose.model('Product', productSchema) (declared in models/grocery-item.ts)
-		.save() // it's a promise so then/catch. Then is akin to an event handler for wtf successful outcome
+	newItem.save() // it's a promise so then/catch. Then is akin to an event handler for wtf successful outcome
 		.then((savedItem) => res.status(201).json(savedItem)) // need to send URI in Location header field? (as per official html specs)
 		.catch(error => next(error));
 });
@@ -111,8 +109,8 @@ productsRouter.put('/:name', (req, res) => {
 		.then(foundItem => {
 			const itemToUpdate = foundItem[0];
 			logger.info('item before update:',JSON.stringify(itemToUpdate));
-			itemToUpdate.name = body.name;
-			itemToUpdate.type = body.type;
+			itemToUpdate['name'] = body.name;
+			itemToUpdate['type'] = body.type;
 			itemToUpdate.save().then(data => res.status(200).send(data))
 				.catch(error => res.status(500).send(`Error updating: ${error}`));
 		})

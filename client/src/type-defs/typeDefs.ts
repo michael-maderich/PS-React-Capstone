@@ -1,5 +1,12 @@
 export type InputElement = HTMLInputElement | HTMLTextAreaElement;
 
+export type AUTH_OBJECT = {
+	token:string,
+	username: string,
+	firstName: string,
+	lastName: string
+};
+
 export type CATEGORY_OBJECT = {	// Array of category/subcategory-list objects
 	mainCategories: string[],			// A Main product category name
 	subCategories: [string[]]			// That Main category's subcategories

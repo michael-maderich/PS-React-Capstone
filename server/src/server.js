@@ -9,11 +9,12 @@ var config = require("./utils/config");
 // import mongoose db module and express server module
 var mongoose = require("mongoose");
 var express = require("express");
-var path = require("path"); // for something...
+var path = require("path"); // For correct path to serve React client from backend
 //import cors = require('cors');	// Needed for app.use(cors) but doesn't work
 //const https = require('https');
 var helmet = require("helmet");
 // Routers
+var login_1 = require("./controllers/login");
 var users_1 = require("./controllers/users");
 var products_1 = require("./controllers/products");
 // import logger module
@@ -57,10 +58,11 @@ app.use(express.static(path.resolve(__dirname, '/client-app/build')));
 /**
  * Express server routes
  */
-// Send all requests to paths at '/api/v1/product'... to productsRouter
-app.use('/api/v1/product/', products_1.default);
+// Send all requests to paths at '`${API_BASE'}/product'... to productsRouter
+app.use(process.env.API_BASE + "/product/", products_1.default);
 // Send all requests to paths at '/users'... to usersRouter
-app.use('/api/v1/users', users_1.default);
+app.use(process.env.API_BASE + "/users", users_1.default);
+app.use('/api/login', login_1.default);
 app.get('/', function (req, res) {
     res.json({ message: 'Hellooo World from Server!' });
 });

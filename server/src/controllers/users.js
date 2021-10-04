@@ -53,38 +53,56 @@ var logger = require("../utils/logger");
 var user_1 = require("../models/user");
 var usersRouter = express.Router();
 var SALT_ROUNDS = 11;
-usersRouter.get('/', function (req, res) {
-    // on react state for logic while keeping (updating) database in sync, or we can query database on every action
-    user_1.User.find({}) // Finds all
-        .then(function (allUsers) {
-        if (allUsers.length === 0) {
-            res.statusMessage = 'No Users in Database!';
-            res.status(500).end();
+usersRouter.get('/', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: // so we can either get data from db in the beginning and rely
+            // on react state for logic while keeping (updating) database in sync, or we can query database on every action
+            return [4 /*yield*/, user_1.User.find({}) //.populate('orders', {fieldtoinclude: 1, anotherfield: 1, exlude:0???})		// Finds all
+                    .then(function (allUsers) {
+                    if (allUsers.length === 0) {
+                        res.statusMessage = 'No Users in Database!';
+                        res.status(500).end();
+                    }
+                    res.status(200).json(allUsers);
+                })
+                    .catch(function (error) { return res.status(500).send("Error on " + req.path + " - " + error); })];
+            case 1:
+                // on react state for logic while keeping (updating) database in sync, or we can query database on every action
+                _a.sent(); // change to .end()
+                return [2 /*return*/];
         }
-        res.status(200).json(allUsers);
-    })
-        .catch(function (error) { return res.status(500).send("Error on " + req.path + " - " + error); }); // change to .end()
-});
-usersRouter.get('/:id', function (req, res, next) {
-    var id = req.params.id;
-    logger.info('User ID:', id);
-    user_1.User.findById(id)
-        .then(function (requestedUser) {
-        if (!requestedUser) {
-            logger.info("Invalid endpoint - " + req.path + ".");
-            res.status(404).end();
-            return;
+    });
+}); });
+usersRouter.get('/:id', function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var id;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                id = req.params.id;
+                logger.info('User ID:', id);
+                return [4 /*yield*/, user_1.User.findById(id)
+                        .then(function (requestedUser) {
+                        if (!requestedUser) {
+                            logger.info("Invalid endpoint - " + req.path + ".");
+                            res.status(404).end();
+                            return;
+                        }
+                        res.status(200).json(requestedUser);
+                    })
+                        .catch(function (error) {
+                        // logger.info(`Error - ${error.message}`);
+                        // res.status(400).send({error: 'Malformatted id'});
+                        next(error);
+                    })];
+            case 1:
+                _a.sent(); // should technically be .end()
+                return [2 /*return*/];
         }
-        res.status(200).json(requestedUser);
-    })
-        .catch(function (error) {
-        // logger.info(`Error - ${error.message}`);
-        // res.status(400).send({error: 'Malformatted id'});
-        next(error);
-    }); // should technically be .end()
-});
+    });
+}); });
 // TODO: Add apidoc documentation
-/*********** NEED TO CHECK IF USER ALREADY EXISTS ***************************************************************/
+// Username (email) uniqueness checked by mongoose validtor in schema
 usersRouter.post('/', function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
     var userData, email, firstName, lastName, password, isEnabled, passwordHash, formattedUserData, newUser;
     return __generator(this, function (_a) {
@@ -101,12 +119,15 @@ usersRouter.post('/', function (req, res, next) { return __awaiter(void 0, void 
             case 1:
                 passwordHash = _a.sent();
                 delete userData.password;
-                formattedUserData = __assign(__assign({}, userData), { email: email.toLowerCase(), firstName: firstName.charAt(0).concat(firstName.slice(1)), lastName: lastName.charAt(0).concat(lastName.slice(1)), passwordHash: passwordHash, dateAdded: new Date(), isEnabled: isEnabled || true });
+                formattedUserData = __assign(__assign({}, userData), { email: email.toLowerCase(), firstName: firstName.charAt(0).concat(firstName.slice(1)), lastName: lastName.charAt(0).concat(lastName.slice(1)), passwordHash: passwordHash, dateAdded: new Date(Date.now()), isEnabled: isEnabled || true });
                 newUser = new user_1.User(formattedUserData);
                 // Save to mongoDB
-                newUser.save()
-                    .then(function (savedItem) { return res.status(201).json(savedItem); }) // need to send URI in Location header field? (as per official html specs)
-                    .catch(function (error) { return next(error); });
+                return [4 /*yield*/, newUser.save()
+                        .then(function (savedItem) { return res.status(201).json(savedItem); }) // need to send URI in Location header field? (as per official html specs)
+                        .catch(function (error) { return next(error); })];
+            case 2:
+                // Save to mongoDB
+                _a.sent();
                 return [2 /*return*/];
         }
     });
@@ -137,43 +158,71 @@ usersRouter.put('/:id', function (req, res) { return __awaiter(void 0, void 0, v
                 _b.label = 3;
             case 3:
                 passwordHash = _a;
-                // Get product from DB if it exists
-                user_1.User.findById(id)
-                    .then(function (userToUpdate) {
-                    if (!userToUpdate)
-                        return res.status(404).end();
-                    logger.info('User before update:', JSON.stringify(userToUpdate));
-                    for (var property in body) {
-                        if (property !== 'id')
-                            userToUpdate[property] = body[property]; // Do not allow _id to be updated
-                    }
-                    if (body.password)
-                        userToUpdate.password = passwordHash;
-                    userToUpdate.save().then(function (data) { return res.status(200).send(data); })
-                        .catch(function (error) { return res.status(500).send("Error updating: " + error); });
-                })
-                    .catch(function (error) {
-                    return res.status(500).send("Error updating: Invalid id '" + id + "'. Please check id and try again. Thank you.\n" + error.message);
-                });
+                // Get user from DB if it exists
+                return [4 /*yield*/, user_1.User.findById(id)
+                        .then(function (userToUpdate) { return __awaiter(void 0, void 0, void 0, function () {
+                        var property;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    if (!userToUpdate)
+                                        return [2 /*return*/, res.status(404).end()];
+                                    logger.info('User before update:', JSON.stringify(userToUpdate));
+                                    for (property in body) {
+                                        if (property !== 'id')
+                                            userToUpdate[property] = body[property]; // Do not allow _id to be updated
+                                    }
+                                    if (body.password)
+                                        userToUpdate['passwordHash'] = passwordHash;
+                                    return [4 /*yield*/, userToUpdate.save().then(function (data) { return res.status(200).send(data); })
+                                            .catch(function (error) { return res.status(500).send("Error updating: " + error); })];
+                                case 1:
+                                    _a.sent();
+                                    return [2 /*return*/];
+                            }
+                        });
+                    }); })
+                        .catch(function (error) {
+                        return res.status(500).send("Error updating: Invalid id '" + id + "'. Please check id and try again. Thank you.\n" + error.message);
+                    })];
+            case 4:
+                // Get user from DB if it exists
+                _b.sent();
                 return [2 /*return*/];
         }
     });
 }); });
-usersRouter.delete('/:id', function (req, res, next) {
-    var id = req.params.id;
-    user_1.User.findById(id)
-        .then(function (userToDelete) {
-        if (!userToDelete)
-            return res.status(404).end();
-        logger.info('userToDelete:', JSON.stringify(userToDelete));
-        var id = userToDelete.id;
-        logger.info('User id to delete:', id);
-        user_1.User.findByIdAndDelete(id)
-            .then(function () { return res.status(204).end(); })
-            .catch(function (error) { return next(error); });
-        //	// Return 404 if item not found (delete returns null)
-        //	`Error on deletion: Invalid ID. Please check ID number and try again. Thank you.`
-    })
-        .catch(function (error) { return next(error); }); // 500 error
-});
+usersRouter.delete('/:id', function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var id;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                id = req.params.id;
+                return [4 /*yield*/, user_1.User.findById(id)
+                        .then(function (userToDelete) { return __awaiter(void 0, void 0, void 0, function () {
+                        var id;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    if (!userToDelete)
+                                        return [2 /*return*/, res.status(404).end()];
+                                    logger.info('userToDelete:', JSON.stringify(userToDelete));
+                                    id = userToDelete.id;
+                                    logger.info('User id to delete:', id);
+                                    return [4 /*yield*/, user_1.User.findByIdAndDelete(id)
+                                            .then(function () { return res.status(204).end(); })
+                                            .catch(function (error) { return next(error); })];
+                                case 1:
+                                    _a.sent();
+                                    return [2 /*return*/];
+                            }
+                        });
+                    }); })
+                        .catch(function (error) { return next(error); })];
+            case 1:
+                _a.sent(); // 500 error
+                return [2 /*return*/];
+        }
+    });
+}); });
 exports.default = usersRouter;

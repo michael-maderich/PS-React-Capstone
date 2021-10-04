@@ -15,7 +15,15 @@ import supertest = require('supertest');
 import app from '../server';
 const api = supertest(app);
 import {User} from '../models/user';
-//import bcrypt = require('bcrypt');
+
+const API_PATH = `${process.env.API_BASE}/users`;
+// Helper function to retrieve all users from DB
+const usersInDb = async () => {
+	const users = await User.find({});
+	return users.map(u => u.toJSON());
+};
+
+import bcrypt = require('bcrypt');
 // const hashPassword = async (password) => {
 // 	const hashedPass = await bcrypt.hash(password, 11);
 // 	return hashedPass;
@@ -52,29 +60,81 @@ beforeEach(async () => {
 	});
 	const promiseArray = userObjects.map(user => user.save());
 	await Promise.all(promiseArray);
-	// initialUsers.forEach(async user => {
-	// 	const userObject = new User(user);
-	// 	await userObject.save();
-	// });
+});
+
+describe('When there is initially one user in DB:', () => {
+	beforeEach(async () => {
+		await User.deleteMany({});
+		const passwordHash = await bcrypt.hash('admin', 10);
+		const user = new User(
+			{
+				email:'admin@admin.com',
+				passwordHash,
+				firstName: 'Admin',
+				lastName: 'Admin',
+				isEnabled: true
+			});
+		await user.save();
+	});
+
+	test('Creation succeeds with a fresh username', async () => {
+		const usersAtStart = await usersInDb();
+		const newUser = {
+			email: 'username@random.com',
+			firstName: 'Random',
+			lastName: 'User',
+			password: 'random',
+			isEnabled: true
+		};
+
+		await api.post(API_PATH)
+			.send(newUser)
+			.expect(201)
+			.expect('Content-Type', /application\/json/);
+		
+		const usersAtEnd = await usersInDb();
+		expect(usersAtEnd).toHaveLength(usersAtStart.length+1);
+		const usernames = usersAtEnd.map(u => u['email']);
+		expect(usernames).toContain(newUser.email);
+	});
+
+	test('Creation fails with proper statuscode and message if username (email) already taken', async () => {
+		const usersAtStart = await usersInDb();
+		const newUser = {
+			email:'admin@admin.com',
+			firstName:'Super',
+			lastName:'User',
+			password:'superuser',
+			isEnabled:true
+		};
+		const result = await api.post(API_PATH)
+			.send(newUser)
+			.expect(400)
+			.expect('Content-Type', /application\/json/);
+
+		expect(result.body.error).toContain('`email` to be unique');
+		const usersAtEnd = await usersInDb();
+		expect(usersAtEnd).toHaveLength(usersAtStart.length);
+	});
 });
 
 describe('When there are initially some users saved:', () => {
 
 	test('Users are returned as JSON', async () => {
 		await api
-			.get('/api/v1/users')
+			.get(API_PATH)
 			.expect(200)
 			.expect('Content-Type', /application\/json/);
 	});
 
 	test('All users are returned', async () => {
-		const response = await api.get('/api/v1/users');
+		const response = await api.get(API_PATH);
 		// execution gets here only after the HTTP request is complete
 		expect(response.body).toHaveLength(initialUsers.length);
 	});
 
 	test('A specific user is within the returned users', async () => {
-		const response = await api.get('/api/v1/users');
+		const response = await api.get(API_PATH);
 		const emails = response.body.map(user => user.email);
 		expect(emails).toContain(initialUsers[0].email);
 	});
@@ -89,7 +149,7 @@ describe('Viewing a specific user:', () => {
 				id = foundUser[0].id;
 			});
 		const result = await api
-			.get(`/api/v1/users/${id}`)
+			.get(`${API_PATH}/${id}`)
 			.expect(200)
 			.expect('Content-Type', /application\/json/);
 		const resultUser = result.body;
@@ -113,7 +173,7 @@ describe('Viewing a specific user:', () => {
 		};
 		const validNonexistingId = nonExistingId;
 		await api
-			.get(`/api/v1/users/${validNonexistingId}`)
+			.get(`${API_PATH}/${validNonexistingId}`)
 			.expect(404);
 	});
 
@@ -121,7 +181,7 @@ describe('Viewing a specific user:', () => {
 		const invalidId = '5a3d5da59070081a82a3445';
 
 		await api
-			.get(`/api/v1/users/${invalidId}`)
+			.get(`${API_PATH}/${invalidId}`)
 			.expect(400);
 	});
 });
@@ -137,11 +197,11 @@ describe('Addition of a new user:', () => {
 			isEnabled: true
 		};
 
-		await api.post('/api/v1/users')
+		await api.post(API_PATH)
 			.send(newUser)
 			.expect(201)
 			.expect('Content-Type', /application\/json/);
-		const response = await api.get('/api/v1/users');
+		const response = await api.get(API_PATH);
 		const emails = response.body.map(user => user.email);
 		expect(response.body).toHaveLength(initialUsers.length + 1);
 		expect(emails).toContain(newUser.email.toLowerCase());
@@ -151,7 +211,7 @@ describe('Addition of a new user:', () => {
 		const newUser = {
 			password: 'ABC123'
 		};
-		await api.post('/api/v1/users')
+		await api.post(API_PATH)
 			.send(newUser)
 			.expect(400);
 	});
@@ -166,12 +226,12 @@ describe('Deletion of a user:', () => {
 				id = foundUser[0].id;
 			});
 
-		await api.delete(`/api/v1/users/${id}`).expect(204);
+		await api.delete(`${API_PATH}/${id}`).expect(204);
 
 		const usersAtEnd = await User.find({});
 		expect(usersAtEnd).toHaveLength(initialUsers.length - 1);
 
-		const emails = usersAtEnd.map(r => r.email);
+		const emails = usersAtEnd.map(r => r['email']);
 		expect(emails).not.toContain(userToDelete.email);
 	});
 });

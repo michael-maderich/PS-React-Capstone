@@ -11,8 +11,9 @@ POST http://localhost:9999/api/v1/users/
 Content-Type: application/json
 
 {
-	"email":"scruffmcgruff",
-    "name":"Scruff McGruff",
+	"email":"scruffmcgruff@scruff.com",
+    "firstName":"Scruff",
+	"lastName":"McGruff",
     "password":"password123"
 }
 
@@ -21,8 +22,9 @@ POST http://localhost:9999/api/v1/users/
 Content-Type: application/json
 
 {
-	"email":"CPrentzler",
-    "name":"Charisse Prentzler",
+	"email":"CPrentzler@scruff.com",
+    "firstName":"Charisse",
+	"lastName": "Prentzler",
     "password":"pass123"
 }
 
@@ -31,7 +33,8 @@ POST http://localhost:9999/api/v1/users/
 Content-Type: application/json
 
 {
-	"email":"testytest",
-    "name":"Testy McTest",
+	"email":"testytest@test.com",
+    "firstName":"Testy",
+	"lastName": "McTest",
     "password":"pass123"
 }

@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
 //import PropTypes from "prop-types";
+import ErrorNotification from './ErrorNotification';
 import './SignUp.css';
-import { States } from '../../type-defs/typeDefs';
+import { States } from '../type-defs/typeDefs';
 
 function SignUp({ newUser, setNewUser, errorMessage, setErrorMessage, handleSignUpFormChange, handleSignUpFormSubmit } ) {
 	useEffect(() => {
@@ -73,13 +74,11 @@ function SignUp({ newUser, setNewUser, errorMessage, setErrorMessage, handleSign
 								value={newUser.state || 'PA'}
 								onChange={handleSignUpFormChange}
 							>
-								{ States.map((state) => {
-									return (
+								{ States.map((state) => { return (
 								<option value={state}key={state}>
 									{state}
 								</option>
-									);
-								}) }
+								); }) }
 							</select>
 						</label>
 						<br /><label htmlFor="phone">
@@ -94,6 +93,7 @@ function SignUp({ newUser, setNewUser, errorMessage, setErrorMessage, handleSign
 						</label>
 					</form>
 				</div>
+				<ErrorNotification message={errorMessage} style={{position:"fixed"}}/>
 			</div>
 			<div id="right-img-content">
 				<img src="https://azcdn.messenger.pgsitecore.com/en-us/-/media/Febreze/Images/Products/product_primary_images/February%202021%20Updates/US_DT_PDP_AIR_UNS_Fresh.png" alt="Febreze Air Unstopables Fresh Scent" />

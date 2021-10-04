@@ -2,17 +2,17 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Switch, Route, Link, Redirect, useHistory } from 'react-router-dom';
 import dotenv from 'dotenv';
-import productsService from './services/products.js';
-import usersService from './services/users.js';
+import productsService from './services/products';
+import usersService from './services/users';
+import loginService from './services/login';
 
 // Source code imports
-import { PRODUCT_TYPE, USER_TYPE } from './type-defs/typeDefs';
-import { InputElement } from './type-defs/typeDefs';
-import ErrorNotification from './Components/ErrorNotification';
+import { PRODUCT_TYPE, USER_TYPE, AUTH_OBJECT } from './type-defs/typeDefs';
+// import ErrorNotification from './Components/ErrorNotification';
 import Header from './Components/Header';
 import HomePage from './Components/HomePage';
 import Login from './Components/Login';
-import SignUp from './Components/SignUp/SignUp';
+import SignUp from './Components/SignUp';
 //import ItemsList from './Components/ItemsList';
 
 dotenv.config();
@@ -25,6 +25,7 @@ const App = () => {
 	const [subnavMenuItems, setSubnavMenuItems]:[{}, React.Dispatch<React.SetStateAction<{}>>] = useState({});
 //	const [areSubnavShown, setAreSubnavShown]:[boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState(false);
 	const [newUser, setNewUser]:[USER_TYPE, React.Dispatch<React.SetStateAction<USER_TYPE>>] = useState({} as USER_TYPE);
+	const [login, setLogin]:[{username:string,password:string}, React.Dispatch<React.SetStateAction<{username:string,password:string}>>] = useState({} as {username:string,password:string});
 //	const [items, setItems]:[PRODUCT_TYPE[], React.Dispatch<React.SetStateAction<PRODUCT_TYPE[]>>] = useState([] as PRODUCT_TYPE[]);
 //	const [newItem, setNewItem]:[PRODUCT_TYPE, React.Dispatch<React.SetStateAction<PRODUCT_TYPE>>] = useState({type:PRODUCT_CATEGORIES.fruits, checked:false} as PRODUCT_TYPE);
 	const [errorMessage, setErrorMessage]:[any, any] = useState(null);
@@ -174,42 +175,30 @@ const App = () => {
 	const handleLoginFormChange: React.ChangeEventHandler<HTMLInputElement> = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = event.currentTarget; //  Must pull these off event/target object here or will be null later. Not sure why
 		console.log(name, ':', value);
-		setNewUser( prev => ({
+		setLogin( prev => ({
 			...prev,
-			[name]: value,
-			dateAdded: new Date(Date.now()),
-			isEnabled:true
-		}) as USER_TYPE );
+			[name]: value
+		}) );
 	};
 
 	const handleLoginFormSubmit: React.FormEventHandler<HTMLFormElement> = (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 		// Do nothing if required data not submitted. Won't happen since submit button is inactive until
 		// required fields are added, but there must be a way to determine which fields are required in the schema
-		if (!(newUser.email&&newUser.firstName&&newUser.lastName)) return;
-		console.log(JSON.stringify(newUser));
-		if (newUser.password !== newUser.passwordConfirm) {
-			setErrorMessage('Passwords do not match! Please try again...');
+		if (!(login.username && login.password)) return;
+		console.log('login sent:',JSON.stringify(login));
+
+		loginService.submitCredentials(login)
+		.then( (response) => {
+			const authObject:AUTH_OBJECT = response.data;
+			console.log('authObject:',JSON.stringify(authObject));
+		})
+		.catch( error => {
+//			alert(JSON.stringify(error.message));
+			setErrorMessage(`Invalid login. Please try again.`);
 			setTimeout(() => setErrorMessage(null), 5000);
-			return;
-		} 
-//		Object.keys(newUser).forEach(key => {if (!newUser[key]) delete newUser[key]}); // Delete field if empty?
-		delete newUser.passwordConfirm;
-		usersService
-			.create(newUser)
-			.then(response => {
-				// Handle successful response
-				const data = response.data;
-				console.log('Response.data: ', data);
-				//setLoggedUser??(newUser);
-				setNewUser({} as USER_TYPE);	// Only clear if successful
-			})
-			.catch(error => {
-				alert(JSON.stringify(error.message));
-				setErrorMessage(`Error registering new user to database...`);
-				setTimeout(() => setErrorMessage(null), 5000);
-				// Reset newUser here if desired (setnewUser)
-			});
+			// Reset newUser here if desired (setnewUser)
+		});
 	};
 
 	// const handleInputChange: React.ChangeEventHandler<HTMLInputElement> = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -370,8 +359,8 @@ const App = () => {
 						</Route>
 						<Route path='/login'>
 							<Login
+								login={login}
 								errorMessage={errorMessage}
-								setErrorMessage={setErrorMessage}
 								handleLoginFormChange={handleLoginFormChange}
 								handleLoginFormSubmit={handleLoginFormSubmit}
 							/>
@@ -390,7 +379,7 @@ const App = () => {
 						<Route render={() => <h1>404: Page Not Found</h1>} />
 					</Switch>
 				</Router>
-				<ErrorNotification message={errorMessage} />
+				{/* <ErrorNotification message={errorMessage} /> */}
 			</div>
 			<Footer />
 		</div>
