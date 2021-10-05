@@ -34,7 +34,7 @@ productsRouter.get('/', function (req, res) {
         }
         res.status(200).json(allProducts);
     })
-        .catch(function (error) { return res.status(500).send("Error on " + req.path + " - " + error); }); // change to .end()
+        .catch(function (error) { return res.status(500).send("Error on " + req.path + " - " + error.message); }); // change to .end()
 });
 /**
    * @api {get} grocery-items/:type List all grocery items of type

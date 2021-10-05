@@ -34,7 +34,7 @@ productsRouter.get('/', (req, res) => { // so we can either get data from db in 
 			}
 			res.status(200).json(allProducts);
 		})
-		.catch( error => res.status(500).send(`Error on ${req.path} - ${error}`)); // change to .end()
+		.catch( error => res.status(500).send(`Error on ${req.path} - ${error.message}`)); // change to .end()
 });
 
 /**

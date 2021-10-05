@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 //import PropTypes from "prop-types";
 import ErrorNotification from './ErrorNotification';
 import './SignUp.css';
@@ -17,7 +18,7 @@ function SignUp({ newUser, setNewUser, errorMessage, setErrorMessage, handleSign
 			<div id="center-content">
 				<div id="registration-panel">
 					<h2>New User Sign-Up</h2>
-					<p>Already Registered? Click <a href="/login">here</a> to Log In</p>
+					<p>Already Registered? Click <Link to="/login">here</Link> to Log In</p>
 					<form onSubmit={handleSignUpFormSubmit} className="form-signin">
 						{/* {errorMessage ? <span>{errorMessage}<br /></span> : ''} */}
 						<div className={`form-group ${errorMessage ? 'has-error' : ''}`}>

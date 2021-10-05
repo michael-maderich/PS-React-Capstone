@@ -55,10 +55,16 @@ nav {
 	background-color:skyblue;
 	max-width:15%;
 }
+#side-nav ul {list-style-type:none;}
 .subNavItem {
-	padding-left:1em;
+	margin-left:-1rem;
 	font-size:.8rem;
+	font-weight:normal;
 }
+.highlighted {
+	font-weight:bold;
+}
+
 
 /* #main-content {
 	margin-top: -3.5em;	/*match header height

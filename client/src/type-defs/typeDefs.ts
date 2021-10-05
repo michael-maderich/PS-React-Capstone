@@ -7,9 +7,11 @@ export type AUTH_OBJECT = {
 	lastName: string
 };
 
+interface categoryObject {
+
+}
 export type CATEGORY_OBJECT = {	// Array of category/subcategory-list objects
-	mainCategories: string[],			// A Main product category name
-	subCategories: [string[]]			// That Main category's subcategories
+	[mainCategory:string]: string[],		// A Main product category name as key, with value being array of subCategories
 }
 
 export type PRODUCT_TYPE = {

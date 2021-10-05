@@ -2,10 +2,11 @@ import { useEffect } from 'react';
 //import PropTypes from "prop-types";
 import './HomePage.css';
 
-function HomePage() {		// deconstructed prop typescript format { items }: { items: PRODUCT_TYPE[] }
+function HomePage({setCategory}) {		// deconstructed prop typescript format { items }: { items: PRODUCT_TYPE[] }
 	useEffect( () => {
 		document.title = 'The Little Store - Home';
-	}, []);
+		setCategory({main:'',sub:''});
+	},);
 
 	return (
 		<div id='center-content'>

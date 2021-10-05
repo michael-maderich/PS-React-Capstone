@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 //import PropTypes from "prop-types";
 import ErrorNotification from './ErrorNotification';
 import './Login.css';
@@ -26,7 +27,7 @@ function Login({login, errorMessage, handleLoginFormChange, handleLoginFormSubmi
 		<div id="center-content">
 			<div id="login-panel">
 				<h2>Log In</h2>
-				<p>New User? Click <a href="/signup">here</a> to Sign Up</p>
+				<p>New User? Click <Link to="/signup">here</Link> to Sign Up</p>
 				<form onSubmit={handleLoginFormSubmit} className="form-signin">
 					<div className="form-group {errorMessage != null ? 'has-errorMessage' : ''}">
 						{/* {message!=null || <div style={{color:"green", marginBottom:"0.5em"}}>{message}</div>} */}
