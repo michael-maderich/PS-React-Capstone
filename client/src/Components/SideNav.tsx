@@ -10,31 +10,29 @@ function SideNav({ category, navMenuItems, subnavMenuItems}) {
 						Home
 					</Link>
 				</li>
-				{navMenuItems.map(mainCategory => {
-					return (
-						<li className={`nav-item${category.main === mainCategory ? ' highlighted' : ''}`}
-							// onMouseEnter={() => setAreSubnavShown(true)}
-							// onMouseLeave={() => setAreSubnavShown(false)}
-							key={mainCategory}
-						>
-							<Link to={`/products/${mainCategory}`} className='nav-link'>
-								{mainCategory}
-							</Link>
-							{/* {areSubnavShown &&  ( <element></element> ) } */}
-							{category.main === mainCategory ?
-							<ul>
-							{subnavMenuItems[mainCategory].map( (subCategory:string) => { return (
-								<li className={`nav-item subNavItem${category.sub === subCategory ? ' highlighted' : ''}`} key={subCategory}>
-									<Link to={`/products/${mainCategory}/${subCategory}`} className='nav-link subNavLink'>
-										{subCategory}
-									</Link>
-								</li>
-							) }) }
-							</ul> : null
-							}
-						</li>
-					);
-				})}
+				{navMenuItems.map( (mainCategory:string) => { return (
+					<li className={`nav-item${category.main === mainCategory ? ' highlighted' : ''}`}
+						// onMouseEnter={() => setAreSubnavShown(true)}
+						// onMouseLeave={() => setAreSubnavShown(false)}
+						key={mainCategory}
+					>
+						<Link to={`/products/${mainCategory}`} className='nav-link'>
+							{mainCategory}
+						</Link>
+						{/* {areSubnavShown &&  ( <element></element> ) } */}
+						{category.main === mainCategory ?
+						<ul>
+						{subnavMenuItems[mainCategory].map( (subCategory:string) => { return (
+							<li className={`nav-item subNavItem${category.sub === subCategory ? ' highlighted' : ''}`} key={subCategory}>
+								<Link to={`/products/${mainCategory}/${subCategory}`} className='nav-link subNavLink'>
+									{subCategory}
+								</Link>
+							</li>
+						) }) }
+						</ul> : null
+						}
+					</li>
+				);})}
 			</ul>
 		</div>
 	);

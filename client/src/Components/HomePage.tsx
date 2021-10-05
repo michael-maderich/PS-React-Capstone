@@ -6,7 +6,7 @@ function HomePage({setCategory}) {		// deconstructed prop typescript format { it
 	useEffect( () => {
 		document.title = 'The Little Store - Home';
 		setCategory({main:'',sub:''});
-	},);
+	},[]);
 
 	return (
 		<div id='center-content'>

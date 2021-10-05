@@ -29,7 +29,7 @@ const App = () => {
 	const [newUser, setNewUser]:[USER_TYPE, React.Dispatch<React.SetStateAction<USER_TYPE>>] = useState({} as USER_TYPE);
 	const [login, setLogin]:[{username:string,password:string}, React.Dispatch<React.SetStateAction<{username:string,password:string}>>] = useState({} as {username:string,password:string});
 	const [authObject, setAuthObject]:[AUTH_OBJECT, React.Dispatch<React.SetStateAction<AUTH_OBJECT>>] = useState({} as AUTH_OBJECT);
-	const [items, setItems]:[PRODUCT_TYPE[], React.Dispatch<React.SetStateAction<PRODUCT_TYPE[]>>] = useState([] as PRODUCT_TYPE[]);
+	const [productList, setProductList]:[PRODUCT_TYPE[], React.Dispatch<React.SetStateAction<PRODUCT_TYPE[]>>] = useState([] as PRODUCT_TYPE[]);
 	const [newItem, setNewItem]:[PRODUCT_TYPE, React.Dispatch<React.SetStateAction<PRODUCT_TYPE>>] = useState({} as PRODUCT_TYPE);
 	const [errorMessage, setErrorMessage]:[any, any] = useState(null);
 	const history = useHistory();
@@ -182,6 +182,10 @@ const App = () => {
 		}));
 	};
 
+	const handleProductListAddToCart: React.FormEventHandler<HTMLFormElement> = (event: React.FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+	}
+
 	const handleProductListFormSubmit: React.FormEventHandler<HTMLFormElement> = (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 		if (!newItem.name) return;	// Do nothing if no data entered in text input
@@ -194,7 +198,7 @@ const App = () => {
 				// Handle successful response
 				const data = response.data;
 				console.log('Response.data: ', data);
-				setItems((prev: PRODUCT_TYPE[]) => [...prev, newItem]); // only add to Items if added to DB
+				setProductList((prev: PRODUCT_TYPE[]) => [...prev, newItem]); // only add to Items if added to DB
 				// setNewItem({
 				// 	type: newItem.type,
 				// 	checked: false
@@ -210,7 +214,7 @@ const App = () => {
 	
 	const handleCheckboxToggle = (itemName:string) => {	// To check/uncheck available products
 		// Go thru all items; change the desired one; return a new array which has our updated item and all the other items.
-		setItems( (prevState:any) => {
+		setProductList( (prevState:any) => {
 			return prevState.map( (item:PRODUCT_TYPE) => {
 				console.log(item);
 
@@ -251,9 +255,13 @@ const App = () => {
 							<ProductList
 								category={category}
 								setCategory={setCategory}
-								setErrorMessage={setErrorMessage}
+								productList={productList}
+								setProductList={setProductList}
+								handleProductListAddToCart={handleProductListAddToCart}
 								handleProductListFormChange={handleProductListFormChange}
 								handleProductListFormSubmit={handleProductListFormSubmit}
+								errorMessage={errorMessage}
+								setErrorMessage={setErrorMessage}
 							/>
 						</Route>
 						<Route path='/signup'>

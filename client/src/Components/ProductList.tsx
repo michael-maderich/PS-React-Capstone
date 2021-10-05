@@ -6,9 +6,9 @@ import productsService from '../services/products';
 import { PRODUCT_TYPE, USER_TYPE, AUTH_OBJECT } from '../type-defs/typeDefs';
 import ErrorNotification from './ErrorNotification';
 
-function ProductList({ category, setCategory, setErrorMessage, handleProductListFormChange, handleProductListFormSubmit } ) {
+function ProductList({ category, setCategory, productList, setProductList, handleProductListFormChange, handleProductListAddToCart, handleProductListFormSubmit, errorMessage, setErrorMessage } ) {
 	/*https://stackoverflow.com/questions/35604617/react-router-with-optional-path-parameter#35604855
-	Working syntax for multiple optional params:
+	Working syntax htmlFor multiple optional params:
 	<Route path="/section/(page)?/:page?/(sort)?/:sort?" component={Section} />
 	Now, url can be:
 	/section
@@ -30,6 +30,11 @@ function ProductList({ category, setCategory, setErrorMessage, handleProductList
 			.then(response => {
 				const { data } = response;
 				console.log(data);
+				const productList:PRODUCT_TYPE[] = data.filter( (product) => {
+					return product.categoryMain === mainCategory;
+				});
+				console.log('filtered products:', productList);
+				setProductList(productList);
 			})
 			.catch(error => {
 				alert(JSON.stringify(error.message));
@@ -38,13 +43,14 @@ function ProductList({ category, setCategory, setErrorMessage, handleProductList
 				);
 				setTimeout(() => setErrorMessage(null), 5000);
 			});
-	}, []);
+	}, [mainCategory, setProductList, setErrorMessage]);
 
 	return (
 		<div id="center-content">
 			<div id="product-panel">
-				<h2>${mainCategory}</h2>
-				${subCategory? <h4>{subCategory}</h4> : ''}
+				<h2>{mainCategory}</h2>
+				{subCategory? <h4>{subCategory}</h4> : ''}
+				{errorMessage && <ErrorNotification errorMessage={errorMessage}/>}
 				<table id="product-table">
 					<thead>
 						<tr>
@@ -59,32 +65,32 @@ function ProductList({ category, setCategory, setErrorMessage, handleProductList
 						</tr>
 					</thead>
 					<tbody>
-					{/* <c:forEach items="${itemList}" var="item">
-					<form action="/addToCart" method="GET">
-						<tr ${item.stockQty==0 ? 'class="inactive"' : ''}>
-							<td class="product_image_panel"><a href="${item.image}" target="_blank"><img src="${item.image}" alt="${item.description}" title="${item.description}" /></a></td>
-							<td>${item.name}</td>
-							<td>${item.options}</td>
-							<td>${item.size}</td>
-							<td><fmt:formatNumber value = "${item.currentPrice}" type = "currency" /></td>
-							<td>${item.stockQty}</td>
-							<td class="customerQty">
-								<input type="hidden" id="upc${item.upc}" name="upc" value="${item.upc}" />
-								<label for="itemQty">
-									<input type="number" id="itemQty${item.upc}" name="itemQty" min="1" max="${item.stockQty}" step="1" value="0" ${item.stockQty==0 ? 'disabled' : ''} />
+					{productList.map( (item:PRODUCT_TYPE) => { console.log(item); return (
+					// <form onSubmit={handleProductListAddToCart}>
+						<tr className={item.stockQty===0 ? 'inactive' : ''} key={item.upc}>
+							<td className="product_image_panel"><a href={item.image} target="_blank" rel="noreferrer"><img src={item.image} alt={item.description} title={item.description} /></a></td>
+							<td>{item.name}</td>
+							<td>{item.options}</td>
+							<td>{item.size}</td>
+							<td>${(Math.round(item.currentPrice*100)/100).toFixed(2)}</td>
+							<td>{item.stockQty}</td>
+							<td className="customerQty">
+								<input type="hidden" id={`upc${item.upc}`} name="upc" value={item.upc} />
+								<label htmlFor="itemQty">
+									<input type="number" id={`itemQty${item.upc}`} name="itemQty" min="1" max={item.stockQty} step="1" value="0" disabled={item.stockQty===0} />
 								</label>
 							</td>
-							<td class="button_panel">
-								<button type="submit" class="btn btn-sm btn-primary btn-block" ${item.stockQty==0 ? 'disabled' : ''}>${item.stockQty==0 ? 'Out of Stock' : 'Add to Cart'}</button>
+							<td className="button_panel">
+								<button type="submit" className="btn btn-sm btn-primary btn-block" disabled={item.stockQty===0}>{item.stockQty===0 ? 'Out of Stock' : 'Add to Cart'}</button>
 							</td>
-							<span>
-								${ addedUpc eq item.upc ? '<span style="color:blue;">'
+							{/* <span>
+								{ addedUpc === item.upc ? '<span style="color:blue;">'
 								.concat(addedItemQty).concat(' ').concat(item.name).concat(' ').concat(item.options)
 								.concat(' ').concat(item.size).concat(' added to cart</span> ') : ''}
-							</span>
+							</span> */}
 						</tr>
-					</form>
-					</c:forEach> */}
+					// </form>
+					);})}
 					</tbody>
 					<tfoot>
 					</tfoot>
