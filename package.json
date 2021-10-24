@@ -11,7 +11,8 @@
 		"start-server": "start npm run start-database && start npm run transpile && npm run --prefix server dev",
 		"start-client": "npm run --prefix client start",
 		"start": "start npm run start-server && npm run start-client",
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"build": "cd server && npm run build"
 	},
 	"author": "Michael A Maderich",
 	"license": "ISC"
