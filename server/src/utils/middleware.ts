@@ -28,7 +28,7 @@ const errorHandler = (error:Error, req:Request, res:Response, next:NextFunction)
 		logger.error(`Error - ${error.message}`);
 		return res.status(400).send({ error: 'Malformatted id' });
 	} else if (error.name === 'ValidationError') {
-		logger.error(`ERROR: Unable to POST ${JSON.stringify(req.body)}. Err is ${error.message}`);
+		logger.error(`ERROR: Mongoose validation error POSTing ${JSON.stringify(req.body)}. Err is ${error.message}`);
 		return res.status(400).json({ error: error.message });
 	}
 	next(error);

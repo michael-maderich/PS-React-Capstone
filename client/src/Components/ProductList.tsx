@@ -1,12 +1,14 @@
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 //import PropTypes from "prop-types";
+import './bootstrap.min.css'
+import './main.css'
 import './ProductList.css';
 import productsService from '../services/products';
 import { PRODUCT_TYPE, USER_TYPE, AUTH_OBJECT } from '../type-defs/typeDefs';
 import ErrorNotification from './ErrorNotification';
 
-function ProductList({ category, setCategory, productList, setProductList, handleProductListFormChange, handleProductListAddToCart, handleProductListFormSubmit, errorMessage, setErrorMessage } ) {
+function ProductList({ category, setCategory, productList, setProductList, cartItems, setCartItems, handleProductListFormChange, handleProductListAddToCart, handleProductListFormSubmit, errorMessage, setErrorMessage } ) {
 	/*https://stackoverflow.com/questions/35604617/react-router-with-optional-path-parameter#35604855
 	Working syntax htmlFor multiple optional params:
 	<Route path="/section/(page)?/:page?/(sort)?/:sort?" component={Section} />
@@ -18,6 +20,7 @@ function ProductList({ category, setCategory, productList, setProductList, handl
 	const { mainCategory } = useParams<{ mainCategory: string }>();
 	const { subCategory } = useParams<{ subCategory: string }>();
 
+	// Update page Title based on current category and subcategory
 	useEffect(() => {
 		document.title = `The Little Store - ${mainCategory}${subCategory ? ' - '.concat(subCategory) : ''} Category`;
 		setCategory({ main: mainCategory, sub: subCategory });
@@ -30,11 +33,17 @@ function ProductList({ category, setCategory, productList, setProductList, handl
 			.then(response => {
 				const { data } = response;
 				console.log(data);
-				const productList:PRODUCT_TYPE[] = data.filter( (product) => {
+				const filteredProductList:PRODUCT_TYPE[] = data.filter( (product) => {
 					return (product.categoryMain === mainCategory) && (!subCategory || (product.categorySpecific === subCategory));
 				});
-				console.log('filtered products:', productList);
-				setProductList(productList);
+//				console.log('filtered products:', filteredProductList);
+				filteredProductList.sort( (a,b) => 
+					a.categorySpecific.localeCompare(b.categorySpecific) ||
+					a.name.localeCompare(b.name) ||
+					a.options.localeCompare(b.options) ||
+					a.size.localeCompare(b.size)
+				);
+				setProductList(filteredProductList);
 			})
 			.catch(error => {
 				alert(JSON.stringify(error.message));
@@ -75,13 +84,31 @@ function ProductList({ category, setCategory, productList, setProductList, handl
 							<td>${(Math.round(item.currentPrice*100)/100).toFixed(2)}</td>
 							<td>{item.stockQty}</td>
 							<td className="customerQty">
-								{/* <input type="hidden" id={`upc${item.upc}`} name="upc" value={item.upc} />
+								{/* <input type="hidden" id={`upc${item.upc}`} name="upc" value={item.upc} />*/
 								<label htmlFor="itemQty">
-									<input type="number" id={`itemQty${item.upc}`} name="itemQty" min="1" max={item.stockQty} step="1" value="0" disabled={item.stockQty===0} />
-								</label> */}
+									<input
+										type='number'
+										id={`itemQty${item.upc}`}
+										name={item.upc.toString()}
+										min='0'
+										max={item.stockQty}
+										step='1'
+										value={cartItems[item.upc] || 0}
+										disabled={item.stockQty === 0}
+										onChange={handleProductListFormChange}
+									/>
+								</label>}
 							</td>
 							<td className="button_panel">
-								<button type="submit" className="btn btn-sm btn-primary btn-block" disabled={item.stockQty===0}>{item.stockQty===0 ? 'Out of Stock' : 'Add to Cart'}</button>
+								<button
+									id={item.upc.toString()}
+									type='submit'
+									className='btn btn-sm btn-primary btn-block'
+									disabled={item.stockQty === 0}
+									onClick={handleProductListAddToCart}
+								>
+									{item.stockQty === 0 ? 'Out of Stock' : 'Add to Cart'}
+								</button>
 							</td>
 							{/* <span>
 								{ addedUpc === item.upc ? '<span style="color:blue;">'

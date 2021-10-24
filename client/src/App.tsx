@@ -30,7 +30,7 @@ const App = () => {
 	const [login, setLogin]:[{username:string,password:string}, React.Dispatch<React.SetStateAction<{username:string,password:string}>>] = useState({} as {username:string,password:string});
 	const [authObject, setAuthObject]:[AUTH_OBJECT, React.Dispatch<React.SetStateAction<AUTH_OBJECT>>] = useState({} as AUTH_OBJECT);
 	const [productList, setProductList]:[PRODUCT_TYPE[], React.Dispatch<React.SetStateAction<PRODUCT_TYPE[]>>] = useState([] as PRODUCT_TYPE[]);
-	const [newItem, setNewItem]:[PRODUCT_TYPE, React.Dispatch<React.SetStateAction<PRODUCT_TYPE>>] = useState({} as PRODUCT_TYPE);
+	const [cartItems, setCartItems]:[{}, React.Dispatch<React.SetStateAction<{}>>] = useState({});
 	const [errorMessage, setErrorMessage]:[any, any] = useState(null);
 	const history = useHistory();
 
@@ -51,9 +51,9 @@ const App = () => {
 						return list;
 					}, {}
 				);
-				// setNavMenuItems(Object.keys(data).sort()); // keys of the categoryList object are mainCat strings
 				setNavMenuItems(Object.keys(categoryList).sort()); // keys of the categoryList object are mainCat strings
-				// setSubnavMenuItems(data);
+				// Use the mainCat keynames to iteratate through each category and sort the subcategory array
+				Object.keys(categoryList).forEach( (mainCat) => categoryList[mainCat].sort());
 				setSubnavMenuItems(categoryList);
 			})
 			.catch(error => {
@@ -174,11 +174,10 @@ const App = () => {
 	const handleProductListFormChange: React.ChangeEventHandler<HTMLInputElement> = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = event.currentTarget; //  Must pull these off event/target object now or will be null later. Not sure why
 		console.log(name, ':', value);
-		setNewItem(prev => ({
+		const maxQty = productList[productList.findIndex(p => p.upc===Number(name))].stockQty;
+		setCartItems(prev => ({
 			...prev,
-			id: Date.now(),
-			[name]: value.toLowerCase(),
-			checked: false
+			[name]: Number(value) > maxQty ? maxQty : Number(value) < 0 ? 0 : Number(value)
 		}));
 	};
 
@@ -188,28 +187,28 @@ const App = () => {
 
 	const handleProductListFormSubmit: React.FormEventHandler<HTMLFormElement> = (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
-		if (!newItem.name) return;	// Do nothing if no data entered in text input
-		const formattedName = newItem.name.toLowerCase();
-		setNewItem({...newItem, name:formattedName});	// Format data -- DOESN'T WORK??? Set in onChange instead
-		console.log(JSON.stringify(newItem));
-		productsService
-			.create(newItem)
-			.then(response => {
-				// Handle successful response
-				const data = response.data;
-				console.log('Response.data: ', data);
-				setProductList((prev: PRODUCT_TYPE[]) => [...prev, newItem]); // only add to Items if added to DB
-				// setNewItem({
-				// 	type: newItem.type,
-				// 	checked: false
-				// } as PRODUCT_TYPE); // Only clear if successful
-			})
-			.catch(error => {
-				alert(JSON.stringify(error.message));
-				setErrorMessage(`Error adding new item to database...`);
-				setTimeout(() => setErrorMessage(null), 5000);
-				// Reset newItem here if desired (setNewItem)
-			});
+		// if (!newItem.name) return;	// Do nothing if no data entered in text input
+		// const formattedName = newItem.name.toLowerCase();
+		// setNewItem({...newItem, name:formattedName});	// Format data -- DOESN'T WORK??? Set in onChange instead
+		// console.log(JSON.stringify(newItem));
+		// productsService
+		// 	.create(newItem)
+		// 	.then(response => {
+		// 		// Handle successful response
+		// 		const data = response.data;
+		// 		console.log('Response.data: ', data);
+		// 		setProductList((prev: PRODUCT_TYPE[]) => [...prev, newItem]); // only add to Items if added to DB
+		// 		// setNewItem({
+		// 		// 	type: newItem.type,
+		// 		// 	checked: false
+		// 		// } as PRODUCT_TYPE); // Only clear if successful
+		// 	})
+		// 	.catch(error => {
+		// 		alert(JSON.stringify(error.message));
+		// 		setErrorMessage(`Error adding new item to database...`);
+		// 		setTimeout(() => setErrorMessage(null), 5000);
+		// 		// Reset newItem here if desired (setNewItem)
+		// 	});
 	};
 	
 	const handleCheckboxToggle = (itemName:string) => {	// To check/uncheck available products
@@ -257,6 +256,8 @@ const App = () => {
 								setCategory={setCategory}
 								productList={productList}
 								setProductList={setProductList}
+								cartItems={cartItems}
+								setCartItems={setCartItems}
 								handleProductListAddToCart={handleProductListAddToCart}
 								handleProductListFormChange={handleProductListFormChange}
 								handleProductListFormSubmit={handleProductListFormSubmit}
